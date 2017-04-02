@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CacheTools", "CacheTools.vcproj", "{1127BD7A-3C87-4D26-AD99-7DCC2C92015F}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{1127BD7A-3C87-4D26-AD99-7DCC2C92015F}.Debug.ActiveCfg = Debug|Win32
+		{1127BD7A-3C87-4D26-AD99-7DCC2C92015F}.Debug.Build.0 = Debug|Win32
+		{1127BD7A-3C87-4D26-AD99-7DCC2C92015F}.Release.ActiveCfg = Release|Win32
+		{1127BD7A-3C87-4D26-AD99-7DCC2C92015F}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
