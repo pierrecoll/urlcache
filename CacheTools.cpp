@@ -25,9 +25,10 @@
 void DisplayHelp()
 {
 	printf("UrlCache : Tool to clear, display, search or delete Cookies, History and Temporary Internet WinINet url cache container entries\n\n");
-	printf("\npierrelc@microsoft.com (Original idea Francois Bernis)\n\n");
-	printf("\nVersion 1.27 April 2017\n\n");
-	printf("Options : \n\n");
+	printf("pierrelc@microsoft.com (Original idea Francois Bernis)\r\n");
+	printf("Version 1.27 April 2017\r\n");
+	printf("Uses WinINet Url cache APIs https://msdn.microsoft.com/en-us/library/aa385473(v=vs.85).aspx\r\n");
+	printf("\nOptions : \n\n");
 	printf("  Help : -h or -?\n\n");
 	printf("  -c : To clear all cache entries of an url cache container , use the options listed below\n\n");
 	printf("    -c:h\tClears previous Day History But Not Today (By Design)\n");
