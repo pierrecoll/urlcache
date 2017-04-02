@@ -14,7 +14,7 @@ SourceUrlName and LocalFileName can mention different strings separated by *  
 For example, to delete all entries in TIF containing wpad in the SourceUrlName field :       
 urlcache  -c:t SourceUrlName wpad    
 To delete all cookies containing msdn or technet in the LocalFileName field :       
-urlcache  -c:c LocalFileName msdn*technet  
+  urlcache  -c:c LocalFileName msdn*technet  
 
 -l : To list  all cache entries of an url cache container, use the options listed below    
 -l:h        Lists all entries in History    
@@ -43,7 +43,7 @@ To prevent displaying one or more cache entries info use the switches below  �
 -r:Expiration      for Expiration estimation      
 -r:a       every field except SourceUrlName   
 For example :     
-urlcache -r:StructSize -r:CacheEntryType will remove StructSize and CacheEntryType  
+  urlcache -r:StructSize -r:CacheEntryType will remove StructSize and CacheEntryType  
 
 -s : To search cache entries, use the options listed below    
 -s:h        Searches History    
@@ -56,11 +56,12 @@ urlcache -r:StructSize -r:CacheEntryType will remove StructSize and CacheEntryTy
 [SourceUrlName | LocalFileName | HeaderInfo | ExpireTime] text    
 SourceUrlName and LocalFileName can mention different strings separated by *    
 For example, to search all entries in TIF containing wpad in the SourceUrlName field :       
-urlcache  -s:t SourceUrlName wpad    
+  urlcache  -s:t SourceUrlName wpad    
 To search all entries in TIF containing wpad or pac in the SourceUrlName field :       
-urlcache  -s:t SourceUrlName wpad*pac    
+  urlcache  -s:t SourceUrlName wpad*pac    
 For example, to search all entries in TIF containing autoconfig in the HeaderInfo field :       
-urlcache  -s:t HeaderInfo application/x-ns-proxy-autoconfig  
+  urlcache  -s:t HeaderInfo application/x-ns-proxy-autoconfig  
+
 -d : To delete cache entries in an url cache container , use the options listed below    
 -d:h        Deletes History entries    
 -d:c        Deletes Cookie entries    
