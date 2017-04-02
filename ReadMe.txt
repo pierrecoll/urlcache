@@ -1,5 +1,8 @@
 UrlCache : Tool to clear, display, search or delete Cookies, History and Temporary Internet WinINet url cache container entries
 pierrelc@microsoft.com (Original idea Francois Bernis)
+
+Uses UrlCache WInINet APIs : https://msdn.microsoft.com/en-us/library/aa385473(v=vs.85).aspx
+
 Version 1.27 April 2017
 Options :  
 Help : -h or -?
