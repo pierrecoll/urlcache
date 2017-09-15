@@ -220,6 +220,36 @@ void CCache::SearchEmieSiteList(LPSTR lpszSearch, BOOL bDelete)
 		printf("\n%d entries deleted.\n", cDeleted);
 	}
 }
+
+//////////////////////////////////////////////////////////////////////
+// Methode : SearchEmieSiteList
+// Resume : Search DOMStore Entry
+// In : None
+// Out : None
+//////////////////////////////////////////////////////////////////////
+void CCache::SearchDOMStore(LPSTR lpszSearch, BOOL bDelete)
+{
+	CCacheEntry CacheEntry;
+	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.FirstDOMStore();
+	unsigned int iteration = 0;
+	unsigned int found = 0;
+	cDeleted = 0;
+
+	while (pInfo)
+	{
+		iteration++;
+		if (SearchCache(pInfo, lpszSearch, bDelete))
+		{
+			found++;
+		}
+		pInfo = CacheEntry.Next();
+	}
+	printf("\n%d entries found searching  %d entries.\n", found, iteration);
+	if (bDelete)
+	{
+		printf("\n%d entries deleted.\n", cDeleted);
+	}
+}
 void CCache::SearchAll(LPSTR lpszSearch,BOOL bDelete)
 {
 	SearchHistory(lpszSearch,bDelete);
@@ -228,6 +258,7 @@ void CCache::SearchAll(LPSTR lpszSearch,BOOL bDelete)
 	//Version 1.21
 	SearchEmieUserList(lpszSearch, bDelete);
 	SearchEmieUserList(lpszSearch, bDelete);
+	SearchDOMStore(lpszSearch, bDelete);
 }
 
 
@@ -705,6 +736,27 @@ void CCache::DisplayEmieSiteList()
 		pInfo = CacheEntry.Next();
 	}
 	printf("\n%d EMIE site list entries files found\n", iteration);
+}
+
+//////////////////////////////////////////////////////////////////////
+// Methode : DisplayDOMStore 
+// Resume : Display DOMStore 
+// In : None
+// Out : None
+//////////////////////////////////////////////////////////////////////
+void CCache::DisplayDOMStore()
+{
+	CCacheEntry CacheEntry;
+	unsigned int iteration = 0;
+	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.FirstDOMStore();
+
+	while (pInfo)
+	{
+		iteration++;
+		DisplayCacheEntry(pInfo);
+		pInfo = CacheEntry.Next();
+	}
+	printf("\n%d DOMStore site list entries files found\n", iteration);
 }
 
 void CCache::DisplayAll()

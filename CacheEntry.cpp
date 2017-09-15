@@ -124,14 +124,25 @@ LPINTERNET_CACHE_ENTRY_INFO CCacheEntry::FirstEmieUser()
 	return First(EMIE_USERLIST_CACHE_PREFIX);
 }
 //////////////////////////////////////////////////////////////////////
-// Methode : FirstEmieSite
-// Resume : Find EMIE site list entry
+// Methode : FirstDOMStore
+// Resume : Find DOMStore entry
 // In : None
 // Out : LPINTERNET_CACHE_ENTRY_INFO
 //////////////////////////////////////////////////////////////////////
 LPINTERNET_CACHE_ENTRY_INFO CCacheEntry::FirstEmieSite()
 {
 	return First(EMIE_SITELIST_CACHE_PREFIX);
+}
+
+//////////////////////////////////////////////////////////////////////
+// Methode : FirstDOMStore
+// Resume : Find EMIE site list entry
+// In : None
+// Out : LPINTERNET_CACHE_ENTRY_INFO
+//////////////////////////////////////////////////////////////////////
+LPINTERNET_CACHE_ENTRY_INFO CCacheEntry::FirstDOMStore()
+{
+	return First(DOMSTORE_CACHE_PREFIX);
 }
 
 //////////////////////////////////////////////////////////////////////

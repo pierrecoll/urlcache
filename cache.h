@@ -61,6 +61,7 @@ class CCache
 		void DisplayHistory		();
 		void DisplayEmieUserList();
 		void DisplayEmieSiteList();
+		void DisplayDOMStore();
 		void DisplayAll();
 
 
@@ -70,6 +71,7 @@ class CCache
 		void SearchHistory		(LPSTR lpszSourceUrlName, BOOL bDelete);
 		void SearchEmieUserList		(LPSTR lpszSourceUrlName, BOOL bDelete);
 		void SearchEmieSiteList		(LPSTR lpszSourceUrlName, BOOL bDelete);
+		void SearchDOMStore (LPSTR lpszSourceUrlName, BOOL bDelete);
 		void SearchAll			(LPSTR lpszSourceUrlName, BOOL bDelete);
 		void DisplayCacheEntry(INTERNET_CACHE_ENTRY_INFO*);
 		BOOL DelCacheEntry(INTERNET_CACHE_ENTRY_INFO* pInfo);
