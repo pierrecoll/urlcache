@@ -82,7 +82,7 @@ void DisplayHelp()
 	printf("    -s:a\tSearches all above\n");
 	printf("    -s:u\tSearches EMIE User List\n");
 	printf("    -s:s\tSearches EMIE Site List\n");	
-	printf("    -s:d\tSearches DOMStoret\n");
+	printf("    -s:d\tSearches DOMStore\n");
 
 	printf("    [SourceUrlName | LocalFileName | HeaderInfo | ExpireTime] text\n");
 	printf("    SourceUrlName and LocalFileName can mention different strings separated by *\n");
@@ -99,8 +99,8 @@ void DisplayHelp()
 	printf("    -d:t \tDeletes Temporary Internet Files entries\n");
 	printf("    -d:a \tDeletes all entries\n");
 	printf("    -d:u \tDeletes EMIE User List entries\n");
-	printf("    -s:s \tDeletes EMIE Site List entries\n");		
-	printf("    -s:d \tDeletes DOMStoreentries\n");
+	printf("    -d:s \tDeletes EMIE Site List entries\n");		
+	printf("    -d:d \tDeletes DOMStoreentries\n");
 
 	printf("    [SourceUrlName | LocalFileName | HeaderInfo | ExpireTime] text\n");
 	printf("    Caution: no warning\n");
