@@ -27,7 +27,7 @@ void DisplayHelp()
 {
 	printf("UrlCache : Tool to clear, display, search or delete Cookies, History,DOMStore, EMIE and Temporary Internet WinINet url cache container entries\n\n");
 	printf("pierrelc@microsoft.com (Original idea Francois Bernis)\r\n");
-	printf("Version 1.29 September 2017\r\n");
+	printf("Version 1.30 October 2017\r\n");
 	printf("Uses WinINet Url cache APIs https://msdn.microsoft.com/en-us/library/aa385473(v=vs.85).aspx\r\n");
 	printf("To work with the cache files located in the Low integrity directory , you can copy urlcache.exe to a directory with Low integrity (like %%TEMP%%\\Low) and run urlcache.exe from this directory\r\n");
 	printf("\tSee https://blogs.msdn.microsoft.com/ieinternals/2010/08/26/writing-files-from-low-integrity-processes/ for more info on Low integrity store\r\n");
