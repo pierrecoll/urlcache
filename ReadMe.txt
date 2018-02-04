@@ -28,6 +28,7 @@ To delete all cookies containing msdn or technet in the LocalFileName field : �
   -l:u        Lists all entries in EMIE User List    
   -l:s        Lists all entries in EMIE Site List    
   -l:d        Lists all entries in DOMStore   
+  -l:d        Lists all entries in iedwonload
 
  
 
@@ -39,6 +40,8 @@ To delete all cookies containing msdn or technet in the LocalFileName field : �
   -s:u        Searches EMIE User List    
   -s:s        Searches EMIE Site List   
   -s:d        Searches DOMStore   
+  -s:d        Searches iedwonload
+
  
 
   [SourceUrlName | LocalFileName | HeaderInfo | ExpireTime] text    
@@ -78,6 +81,7 @@ To delete all cookies containing msdn or technet in the LocalFileName field : �
   -d:u        Deletes EMIE User List entries    
   -d:s        Deletes EMIE Site List entries  
   -d:d        Deletes DOMStore entries  
+  -d:d        Deletes iedownload entries  
 
     
   [SourceUrlName | LocalFileName | HeaderInfo | ExpireTime] text    

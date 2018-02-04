@@ -65,7 +65,7 @@ LPINTERNET_CACHE_ENTRY_INFO CCacheEntry::First(LPCTSTR lpszSearchPattern)
 			m_CacheInfo.InitMemory();
 		}
 
-		m_CacheHandle = ::FindFirstUrlCacheEntry(lpszSearchPattern, m_CacheInfo.GetInfo(), &dwSize);
+		m_CacheHandle = ::FindFirstUrlCacheEntryEx(lpszSearchPattern, 0, 0xFFFFFFFF, 0, m_CacheInfo.GetInfo(), &dwSize,0,0,0);
 		
 		if(m_CacheHandle)
 		{
@@ -143,6 +143,17 @@ LPINTERNET_CACHE_ENTRY_INFO CCacheEntry::FirstEmieSite()
 LPINTERNET_CACHE_ENTRY_INFO CCacheEntry::FirstDOMStore()
 {
 	return First(DOMSTORE_CACHE_PREFIX);
+}
+
+//////////////////////////////////////////////////////////////////////
+// Methode : Firstiedownload
+// Resume : Find iedownload entry
+// In : None
+// Out : LPINTERNET_CACHE_ENTRY_INFO
+//////////////////////////////////////////////////////////////////////
+LPINTERNET_CACHE_ENTRY_INFO CCacheEntry::Firstiedownload()
+{
+	return First(IEDOWNLOAD_CACHE_PREFIX);
 }
 
 //////////////////////////////////////////////////////////////////////

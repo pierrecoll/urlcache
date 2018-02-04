@@ -62,6 +62,7 @@ class CCache
 		void DisplayEmieUserList();
 		void DisplayEmieSiteList();
 		void DisplayDOMStore();
+		void Displayiedownload();
 		void DisplayAll();
 
 
@@ -72,6 +73,7 @@ class CCache
 		void SearchEmieUserList		(LPSTR lpszSourceUrlName, BOOL bDelete);
 		void SearchEmieSiteList		(LPSTR lpszSourceUrlName, BOOL bDelete);
 		void SearchDOMStore (LPSTR lpszSourceUrlName, BOOL bDelete);
+		void Searchiedownload(LPSTR lpszSourceUrlName, BOOL bDelete);
 		void SearchAll			(LPSTR lpszSourceUrlName, BOOL bDelete);
 		void DisplayCacheEntry(INTERNET_CACHE_ENTRY_INFO*);
 		BOOL DelCacheEntry(INTERNET_CACHE_ENTRY_INFO* pInfo);

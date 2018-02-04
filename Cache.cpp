@@ -222,7 +222,7 @@ void CCache::SearchEmieSiteList(LPSTR lpszSearch, BOOL bDelete)
 }
 
 //////////////////////////////////////////////////////////////////////
-// Methode : SearchEmieSiteList
+// Methode : SearchDOMStore
 // Resume : Search DOMStore Entry
 // In : None
 // Out : None
@@ -250,6 +250,38 @@ void CCache::SearchDOMStore(LPSTR lpszSearch, BOOL bDelete)
 		printf("\n%d entries deleted.\n", cDeleted);
 	}
 }
+
+//////////////////////////////////////////////////////////////////////
+// Methode : Searchiedownload
+// Resume : Search iedownload Entry
+// In : None
+// Out : None
+//////////////////////////////////////////////////////////////////////
+void CCache::Searchiedownload(LPSTR lpszSearch, BOOL bDelete)
+{
+	CCacheEntry CacheEntry;
+	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.Firstiedownload();
+	unsigned int iteration = 0;
+	unsigned int found = 0;
+	cDeleted = 0;
+
+	while (pInfo)
+	{
+		iteration++;
+		if (SearchCache(pInfo, lpszSearch, bDelete))
+		{
+			found++;
+		}
+		pInfo = CacheEntry.Next();
+	}
+	printf("\n%d entries found searching  %d entries.\n", found, iteration);
+	if (bDelete)
+	{
+		printf("\n%d entries deleted.\n", cDeleted);
+	}
+}
+
+
 void CCache::SearchAll(LPSTR lpszSearch,BOOL bDelete)
 {
 	SearchHistory(lpszSearch,bDelete);
@@ -259,6 +291,7 @@ void CCache::SearchAll(LPSTR lpszSearch,BOOL bDelete)
 	SearchEmieUserList(lpszSearch, bDelete);
 	SearchEmieUserList(lpszSearch, bDelete);
 	SearchDOMStore(lpszSearch, bDelete);
+	Searchiedownload(lpszSearch, bDelete);
 }
 
 
@@ -735,7 +768,7 @@ void CCache::DisplayEmieSiteList()
 		DisplayCacheEntry(pInfo);
 		pInfo = CacheEntry.Next();
 	}
-	printf("\n%d EMIE site list entries files found\n", iteration);
+	printf("\n%d EMIE site list entries found\n", iteration);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -756,7 +789,28 @@ void CCache::DisplayDOMStore()
 		DisplayCacheEntry(pInfo);
 		pInfo = CacheEntry.Next();
 	}
-	printf("\n%d DOMStore site list entries files found\n", iteration);
+	printf("\n%d DOMStore site list entries found\n", iteration);
+}
+
+//////////////////////////////////////////////////////////////////////
+// Methode : Displayiedownload 
+// Resume : Display iedownload 
+// In : None
+// Out : None
+//////////////////////////////////////////////////////////////////////
+void CCache::Displayiedownload()
+{
+	CCacheEntry CacheEntry;
+	unsigned int iteration = 0;
+	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.Firstiedownload();
+
+	while (pInfo)
+	{
+		iteration++;
+		DisplayCacheEntry(pInfo);
+		pInfo = CacheEntry.Next();
+	}
+	printf("\n%d iedownload entries  found\n", iteration);
 }
 
 void CCache::DisplayAll()
@@ -764,6 +818,10 @@ void CCache::DisplayAll()
 	DisplayHistory();
 	DisplayTemporary();
 	DisplayCookies();
+	DisplayEmieSiteList();
+	DisplayEmieUserList();
+	DisplayDOMStore();
+	Displayiedownload();
 }
 
 
