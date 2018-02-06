@@ -2,7 +2,7 @@
 #include "CacheTools.h"
 #include "ClearCache.h"
 #include "Cache.h"
-
+#include "cacheinfo.h"
 #include <stdio.h>
 
 //////////////////////////////////////////////////////////////////////
@@ -23,12 +23,13 @@
 //1.27 Fixing -r:HeaderInfoSize. Adding output of number of elements for l: command.
 //1.28 Adding support for DOMStore
 //1.31 Adding support for iedownload
+//1.32 major rewrite of functions/ no added features
 
 void DisplayHelp()
 {
 	printf("UrlCache : Tool to clear, display, search or delete Cookies, History,DOMStore, EMIE and Temporary Internet WinINet url cache container entries\n\n");
 	printf("pierrelc@microsoft.com (Original idea Francois Bernis)\r\n");
-	printf("Version 1.31 February 2018\r\n");
+	printf("Version 1.32 February 2018\r\n");
 	printf("Uses WinINet Url cache APIs https://msdn.microsoft.com/en-us/library/aa385473(v=vs.85).aspx\r\n");
 	printf("To work with the cache files located in the Low integrity directory , you can copy urlcache.exe to a directory with Low integrity (like %%TEMP%%\\Low) and run urlcache.exe from this directory\r\n");
 	printf("\tSee https://blogs.msdn.microsoft.com/ieinternals/2010/08/26/writing-files-from-low-integrity-processes/ for more info on Low integrity store\r\n");
@@ -288,14 +289,14 @@ int main(int argc, char* argv[])
 				 	printf("\nPlease read help using -h \n\n");
 					return nRetCode;
 				}				
-				if (LoopStringUpper(arg,":h") != NULL) Cache.DisplayHistory();
-				else if (LoopStringUpper(arg,":c") != 0) Cache.DisplayCookies();
-				else if (LoopStringUpper(arg,":t") != 0) Cache.DisplayTemporary();
+				if (LoopStringUpper(arg,":h") != NULL) Cache.Display(HISTORY_CACHE_PREFIX);
+				else if (LoopStringUpper(arg,":c") != 0) Cache.Display(COOKIE_CACHE_PREFIX);
+				else if (LoopStringUpper(arg,":t") != 0) Cache.Display(TEMPORARY_CACHE_PREFIX);
 				else if (LoopStringUpper(arg,":a") != 0) Cache.DisplayAll();
-				else if (LoopStringUpper(arg, ":u") != 0) Cache.DisplayEmieUserList();
-				else if (LoopStringUpper(arg, ":s") != 0) Cache.DisplayEmieSiteList();
-				else if (LoopStringUpper(arg, ":d") != 0) Cache.DisplayDOMStore();
-				else if (LoopStringUpper(arg, ":i") != 0) Cache.Displayiedownload();
+				else if (LoopStringUpper(arg, ":u") != 0) Cache.Display(EMIE_USERLIST_CACHE_PREFIX);
+				else if (LoopStringUpper(arg, ":s") != 0) Cache.Display(EMIE_SITELIST_CACHE_PREFIX);
+				else if (LoopStringUpper(arg, ":d") != 0) Cache.Display(DOMSTORE_CACHE_PREFIX);
+				else if (LoopStringUpper(arg, ":i") != 0) Cache.Display(IEDOWNLOAD_CACHE_PREFIX);
 				else
 				{
 					printf("\nSyntax error please read help using -h \n\n");
@@ -342,14 +343,14 @@ int main(int argc, char* argv[])
 				}
 				printf("Searching for entries where %s contains : %s\r\n",argv[i+1], argv[i+2]);
 				//FALSE as last  parameter means search only, no delete
-				if (LoopStringUpper(arg,":h") != NULL) Cache.SearchHistory(argv[i+2],FALSE);
-				else if (LoopStringUpper(arg,":c") != 0) Cache.SearchCookies(argv[i+2],FALSE);
-				else if (LoopStringUpper(arg,":t") != 0) Cache.SearchTemporary(argv[i+2],FALSE);
+				if (LoopStringUpper(arg,":h") != NULL) Cache.Search(HISTORY_CACHE_PREFIX,argv[i+2],FALSE);
+				else if (LoopStringUpper(arg,":c") != 0) Cache.Search(COOKIE_CACHE_PREFIX,argv[i+2],FALSE);
+				else if (LoopStringUpper(arg,":t") != 0) Cache.Search(TEMPORARY_CACHE_PREFIX,argv[i+2],FALSE);
 				else if (LoopStringUpper(arg,":a") != 0) Cache.SearchAll(argv[i+2],FALSE);
-				else if (LoopStringUpper(arg, ":u") != 0) Cache.SearchEmieUserList(argv[i + 2], FALSE);
-				else if (LoopStringUpper(arg, ":s") != 0) Cache.SearchEmieSiteList(argv[i + 2], FALSE);
-				else if (LoopStringUpper(arg, ":d") != 0) Cache.SearchDOMStore(argv[i + 2], FALSE);
-				else if (LoopStringUpper(arg, ":i") != 0) Cache.Searchiedownload(argv[i + 2], FALSE);
+				else if (LoopStringUpper(arg, ":u") != 0) Cache.Search(EMIE_USERLIST_CACHE_PREFIX, argv[i + 2], FALSE);
+				else if (LoopStringUpper(arg, ":s") != 0) Cache.Search(EMIE_SITELIST_CACHE_PREFIX, argv[i + 2], FALSE);
+				else if (LoopStringUpper(arg, ":d") != 0) Cache.Search(DOMSTORE_CACHE_PREFIX,argv[i + 2], FALSE);
+				else if (LoopStringUpper(arg, ":i") != 0) Cache.Search(IEDOWNLOAD_CACHE_PREFIX, argv[i + 2], FALSE);
 				else
 				{
 					printf("\nSyntax error please read help using -h \n\n");
@@ -389,14 +390,14 @@ int main(int argc, char* argv[])
 				}
 				printf("Deleting entries where %s contains : %s\r\n",argv[i+1], argv[i+2]);
 				//FALSE as last  parameter means search only, no delete
-				if (LoopStringUpper(arg,":h") != NULL) Cache.SearchHistory(argv[i+2],TRUE);
-				else if (LoopStringUpper(arg,":c") != 0) Cache.SearchCookies(argv[i+2],TRUE);
-				else if (LoopStringUpper(arg,":t") != 0) Cache.SearchTemporary(argv[i+2],TRUE);
-				else if (LoopStringUpper(arg, ":u") != 0) Cache.SearchEmieUserList(argv[i + 2], TRUE);
-				else if (LoopStringUpper(arg, ":s") != 0) Cache.SearchEmieSiteList(argv[i + 2], TRUE);
-				else if (LoopStringUpper(arg, ":d") != 0) Cache.SearchDOMStore(argv[i + 2], TRUE);
-				else if (LoopStringUpper(arg, ":i") != 0) Cache.Searchiedownload(argv[i + 2], TRUE);
-				else if (LoopStringUpper(arg,":a") != 0) Cache.SearchAll(argv[i+2],TRUE);
+				if (LoopStringUpper(arg, ":h") != NULL) Cache.Search(HISTORY_CACHE_PREFIX, argv[i + 2], TRUE);
+				else if (LoopStringUpper(arg, ":c") != 0) Cache.Search(COOKIE_CACHE_PREFIX, argv[i + 2], TRUE);
+				else if (LoopStringUpper(arg, ":t") != 0) Cache.Search(TEMPORARY_CACHE_PREFIX, argv[i + 2], TRUE);
+				else if (LoopStringUpper(arg, ":a") != 0) Cache.SearchAll(argv[i + 2], TRUE);
+				else if (LoopStringUpper(arg, ":u") != 0) Cache.Search(EMIE_USERLIST_CACHE_PREFIX, argv[i + 2], TRUE);
+				else if (LoopStringUpper(arg, ":s") != 0) Cache.Search(EMIE_SITELIST_CACHE_PREFIX, argv[i + 2], TRUE);
+				else if (LoopStringUpper(arg, ":d") != 0) Cache.Search(DOMSTORE_CACHE_PREFIX, argv[i + 2], TRUE);
+				else if (LoopStringUpper(arg, ":i") != 0) Cache.Search(IEDOWNLOAD_CACHE_PREFIX, argv[i + 2], TRUE);
 				else
 				{
 					printf("\nSyntax error please read help using -h \n\n");

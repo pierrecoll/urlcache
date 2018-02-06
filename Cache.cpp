@@ -72,109 +72,22 @@ CCache::~CCache()
 {
 
 }
-//////////////////////////////////////////////////////////////////////
-// Methode : SearchCookies
-// Resume : Search Cookies Entry
-// In : None
-// Out : None
-//////////////////////////////////////////////////////////////////////
-void CCache::SearchCookies(LPSTR lpszSearch,BOOL bDelete)
-{
-	CCacheEntry CacheEntry;
-	unsigned int iteration=0;
-	unsigned int found=0;
-	cDeleted=0;
 
-	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.FirstCookie();
-	while(pInfo)
-	{
-		iteration++;
-		if (SearchCache(pInfo,lpszSearch,bDelete))
-		{
-			found++;
-		}
-		pInfo = CacheEntry.Next();
-	}
-	printf("\n%d entries found searching  %d entries.\n",found, iteration);
-	if (bDelete)
-	{
-		printf("\n%d entries deleted.\n", cDeleted);
-	}
-}
 //////////////////////////////////////////////////////////////////////
-// Methode : SearchTemporary
-// Resume : Search Temporary Internet Files Entry
-// In : None
-// Out : None
-// 120713 adding CDeleted counter
-//////////////////////////////////////////////////////////////////////
-void CCache::SearchTemporary(LPSTR lpszSearch,BOOL bDelete)
-{
-	CCacheEntry CacheEntry;
-	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.First();
-	unsigned int iteration=0;
-	unsigned int found=0;
-	cDeleted=0;
-	while(pInfo)
-	{
-		if(CacheEntry.IsTemporary(pInfo->CacheEntryType))
-		{	
-			iteration++;
-			if (SearchCache(pInfo,lpszSearch,bDelete))
-			{
-				found++;
-			}
-		}
-		pInfo = CacheEntry.Next();
-	}
-	printf("\n%d entries found searching  %d entries.\n", found, iteration);
-	if (bDelete)
-	{
-		printf("\n%d entries deleted.\n", cDeleted);
-	}
-}
-//////////////////////////////////////////////////////////////////////
-// Methode : SearchHistory
-// Resume : Search History Entry
+// Methode : Search
+// Resume : Search an Entry in a container
 // In : None
 // Out : None
 //////////////////////////////////////////////////////////////////////
-void CCache::SearchHistory(LPSTR lpszSearch, BOOL bDelete)
+void CCache::Search(LPSTR lpszContainer, LPSTR lpszSearch, BOOL bDelete)
 {
 	CCacheEntry CacheEntry;
-	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.FirstHistory();
-	unsigned int iteration=0;
-	unsigned int found=0;
-	cDeleted=0;
-
-	while(pInfo)
-	{
-		iteration++;
-		if (SearchCache(pInfo,lpszSearch,bDelete))
-		{
-			found++;
-		}
-		pInfo = CacheEntry.Next();
-	}
-	printf("\n%d entries found searching  %d entries.\n",found, iteration);
-	if (bDelete)
-	{
-		printf("\n%d entries deleted.\n", cDeleted);
-	}
-}
-//////////////////////////////////////////////////////////////////////
-// Methode : SearchEmieUserList
-// Resume : Search EMIE User List Entry
-// In : None
-// Out : None
-//////////////////////////////////////////////////////////////////////
-void CCache::SearchEmieUserList(LPSTR lpszSearch, BOOL bDelete)
-{
-	CCacheEntry CacheEntry;
-	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.FirstEmieUser();
 	unsigned int iteration = 0;
 	unsigned int found = 0;
 	cDeleted = 0;
+	TCHAR EntryName[256];
+
+	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.First(lpszContainer);
 
 	while (pInfo)
 	{
@@ -185,115 +98,52 @@ void CCache::SearchEmieUserList(LPSTR lpszSearch, BOOL bDelete)
 		}
 		pInfo = CacheEntry.Next();
 	}
-	printf("\n%d entries found searching  %d entries.\n", found, iteration);
+
+	if (lpszContainer == "") {
+		lstrcpy(EntryName, "temporary internet files");
+	}
+	else
+	{
+		lstrcpy(EntryName, lpszContainer);
+		EntryName[strlen(lpszContainer) - 1] = '\0';
+	}
+
+	if (iteration == 0)
+	{
+		printf("\nNo %s entries to search.\n", EntryName);
+		return;
+	}
+
+	if (found == 0)
+	{		
+		printf("\nNo entry found searching %d %s entries.\n",  iteration, EntryName);
+	}
+	else if (found == 1)
+	{
+		printf("\nOne entry found searching %d %s entries.\n",  iteration, EntryName);
+	}
+	else
+	{
+		printf("\n%d entries found searching %d %s entries.\n", found, iteration, EntryName);
+	}
+	
 	if (bDelete)
 	{
 		printf("\n%d entries deleted.\n", cDeleted);
 	}
 }
-//////////////////////////////////////////////////////////////////////
-// Methode : SearchEmieSiteList
-// Resume : Search EMIE User List Entry
-// In : None
-// Out : None
-//////////////////////////////////////////////////////////////////////
-void CCache::SearchEmieSiteList(LPSTR lpszSearch, BOOL bDelete)
-{
-	CCacheEntry CacheEntry;
-	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.FirstEmieSite();
-	unsigned int iteration = 0;
-	unsigned int found = 0;
-	cDeleted = 0;
-
-	while (pInfo)
-	{
-		iteration++;
-		if (SearchCache(pInfo, lpszSearch, bDelete))
-		{
-			found++;
-		}
-		pInfo = CacheEntry.Next();
-	}
-	printf("\n%d entries found searching  %d entries.\n", found, iteration);
-	if (bDelete)
-	{
-		printf("\n%d entries deleted.\n", cDeleted);
-	}
-}
-
-//////////////////////////////////////////////////////////////////////
-// Methode : SearchDOMStore
-// Resume : Search DOMStore Entry
-// In : None
-// Out : None
-//////////////////////////////////////////////////////////////////////
-void CCache::SearchDOMStore(LPSTR lpszSearch, BOOL bDelete)
-{
-	CCacheEntry CacheEntry;
-	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.FirstDOMStore();
-	unsigned int iteration = 0;
-	unsigned int found = 0;
-	cDeleted = 0;
-
-	while (pInfo)
-	{
-		iteration++;
-		if (SearchCache(pInfo, lpszSearch, bDelete))
-		{
-			found++;
-		}
-		pInfo = CacheEntry.Next();
-	}
-	printf("\n%d entries found searching  %d entries.\n", found, iteration);
-	if (bDelete)
-	{
-		printf("\n%d entries deleted.\n", cDeleted);
-	}
-}
-
-//////////////////////////////////////////////////////////////////////
-// Methode : Searchiedownload
-// Resume : Search iedownload Entry
-// In : None
-// Out : None
-//////////////////////////////////////////////////////////////////////
-void CCache::Searchiedownload(LPSTR lpszSearch, BOOL bDelete)
-{
-	CCacheEntry CacheEntry;
-	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.Firstiedownload();
-	unsigned int iteration = 0;
-	unsigned int found = 0;
-	cDeleted = 0;
-
-	while (pInfo)
-	{
-		iteration++;
-		if (SearchCache(pInfo, lpszSearch, bDelete))
-		{
-			found++;
-		}
-		pInfo = CacheEntry.Next();
-	}
-	printf("\n%d entries found searching  %d entries.\n", found, iteration);
-	if (bDelete)
-	{
-		printf("\n%d entries deleted.\n", cDeleted);
-	}
-}
-
 
 void CCache::SearchAll(LPSTR lpszSearch,BOOL bDelete)
 {
-	SearchHistory(lpszSearch,bDelete);
-	SearchTemporary(lpszSearch,bDelete);
-	SearchCookies(lpszSearch,bDelete);
+	Search(HISTORY_CACHE_PREFIX,lpszSearch,bDelete);
+	Search(TEMPORARY_CACHE_PREFIX,lpszSearch,bDelete);
+	Search(COOKIE_CACHE_PREFIX, lpszSearch,bDelete);
 	//Version 1.21
-	SearchEmieUserList(lpszSearch, bDelete);
-	SearchEmieUserList(lpszSearch, bDelete);
-	SearchDOMStore(lpszSearch, bDelete);
-	Searchiedownload(lpszSearch, bDelete);
+	Search(EMIE_SITELIST_CACHE_PREFIX, lpszSearch, bDelete);
+	Search(EMIE_USERLIST_CACHE_PREFIX,lpszSearch, bDelete);
+	Search(DOMSTORE_CACHE_PREFIX,lpszSearch, bDelete);
+	Search(IEDOWNLOAD_CACHE_PREFIX,lpszSearch, bDelete);
 }
-
 
 //////////////////////////////////////////////////////////////////////
 // Methode : CCache
@@ -666,168 +516,60 @@ CString GetTime(FILETIME ft)
 }
 
 //////////////////////////////////////////////////////////////////////
-// Methode : DisplayCookies
-// Resume : Display Cookies Entry
+// Methode : Display
+// Resume : Display  Entry
 // In : None
 // Out : None
 //////////////////////////////////////////////////////////////////////
-void CCache::DisplayCookies()
+void CCache::Display(LPSTR lpszContainer)
 {
 	CCacheEntry CacheEntry;
 	unsigned int iteration = 0;
-	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.FirstCookie();
+	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.First(lpszContainer);
+	TCHAR EntryName[256];
+	while (pInfo)
+	{
+		iteration++;
+		DisplayCacheEntry(pInfo);
+		pInfo = CacheEntry.Next();
+	}
+
+	if (lpszContainer == "") {
+		lstrcpy(EntryName, "temporary internet files");
+	}
+	else
+	{
+		lstrcpy(EntryName, lpszContainer);
+		EntryName[strlen(lpszContainer)-1] = '\0';
+	}
 	
-	while(pInfo)
-	{
-		iteration++;
-		DisplayCacheEntry(pInfo);
-		pInfo = CacheEntry.Next();
+	if (iteration == 0)
+	{ 
+		printf("\nno %s entry\n", EntryName);
 	}
-	printf("\n%d cookies found\n", iteration);
-}
-//////////////////////////////////////////////////////////////////////
-// Methode : DisplayTemporary
-// Resume : Display Temporary Internet Files Entry
-// In : None
-// Out : None
-//////////////////////////////////////////////////////////////////////
-void CCache::DisplayTemporary()
-{
-	CCacheEntry CacheEntry;
-	unsigned int iteration = 0;
-	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.First();
-
-	while(pInfo)
+	else if (iteration == 1)
 	{
-		if(CacheEntry.IsTemporary(pInfo->CacheEntryType))
-		{	
-			iteration++;
-			DisplayCacheEntry(pInfo);
-		}
-		pInfo = CacheEntry.Next();
+		printf("\none %s entry\n",  EntryName);
 	}
-	printf("\n%d temporary internet files found\n", iteration);
-}
-//////////////////////////////////////////////////////////////////////
-// Methode : DisplayHistory
-// Resume : Display History Entry
-// In : None
-// Out : None
-//////////////////////////////////////////////////////////////////////
-void CCache::DisplayHistory()
-{
-	CCacheEntry CacheEntry;
-	unsigned int iteration = 0;
-	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.FirstHistory();
-
-	while(pInfo)
+	else
 	{
-		iteration++;
-		DisplayCacheEntry(pInfo);
-		pInfo = CacheEntry.Next();
+		printf("\n%d %s entries\n", iteration, EntryName);
 	}
-	printf("\n%d history entries found\n", iteration);
 }
 
-//////////////////////////////////////////////////////////////////////
-// Methode : DisplayEmieUserList
-// Resume : Display Emie User List 
-// In : None
-// Out : None
-//////////////////////////////////////////////////////////////////////
-void CCache::DisplayEmieUserList()
-{
-	CCacheEntry CacheEntry;
-	unsigned int iteration = 0;
-	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.FirstEmieUser();
-
-	while (pInfo)
-	{
-		iteration++;
-		DisplayCacheEntry(pInfo);
-		pInfo = CacheEntry.Next();
-	}
-	printf("\n%d EMIE user list entries found\n", iteration);
-}
-
-//////////////////////////////////////////////////////////////////////
-// Methode : DisplayEmieSiteList
-// Resume : Display Emie Site List 
-// In : None
-// Out : None
-//////////////////////////////////////////////////////////////////////
-void CCache::DisplayEmieSiteList()
-{
-	CCacheEntry CacheEntry;
-	unsigned int iteration = 0;
-	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.FirstEmieSite();
-
-	while (pInfo)
-	{
-		iteration++;
-		DisplayCacheEntry(pInfo);
-		pInfo = CacheEntry.Next();
-	}
-	printf("\n%d EMIE site list entries found\n", iteration);
-}
-
-//////////////////////////////////////////////////////////////////////
-// Methode : DisplayDOMStore 
-// Resume : Display DOMStore 
-// In : None
-// Out : None
-//////////////////////////////////////////////////////////////////////
-void CCache::DisplayDOMStore()
-{
-	CCacheEntry CacheEntry;
-	unsigned int iteration = 0;
-	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.FirstDOMStore();
-
-	while (pInfo)
-	{
-		iteration++;
-		DisplayCacheEntry(pInfo);
-		pInfo = CacheEntry.Next();
-	}
-	printf("\n%d DOMStore site list entries found\n", iteration);
-}
-
-//////////////////////////////////////////////////////////////////////
-// Methode : Displayiedownload 
-// Resume : Display iedownload 
-// In : None
-// Out : None
-//////////////////////////////////////////////////////////////////////
-void CCache::Displayiedownload()
-{
-	CCacheEntry CacheEntry;
-	unsigned int iteration = 0;
-	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.Firstiedownload();
-
-	while (pInfo)
-	{
-		iteration++;
-		DisplayCacheEntry(pInfo);
-		pInfo = CacheEntry.Next();
-	}
-	printf("\n%d iedownload entries  found\n", iteration);
-}
 
 void CCache::DisplayAll()
 {
-	DisplayHistory();
-	DisplayTemporary();
-	DisplayCookies();
-	DisplayEmieSiteList();
-	DisplayEmieUserList();
-	DisplayDOMStore();
-	Displayiedownload();
+	Display(HISTORY_CACHE_PREFIX);
+	Display(TEMPORARY_CACHE_PREFIX);
+	Display(COOKIE_CACHE_PREFIX);
+	Display(EMIE_USERLIST_CACHE_PREFIX);
+	Display(EMIE_SITELIST_CACHE_PREFIX);
+	Display(DOMSTORE_CACHE_PREFIX);
+	Display(IEDOWNLOAD_CACHE_PREFIX);
 }
 
-
-
 //1.23
-//%SDXROOT%\inetcore\wininet\common\util.cxx
 
 BOOL
 PrintFileTimeInInternetFormat(
@@ -853,11 +595,7 @@ __in DWORD   dwSize
 		dwSize));
 
 }
-//%SDXROOT%\inetcore\wininet\http\cache.cxx
-//
-// Calculate an implicit validity period of 10% on any 200 response which has a
-// Last-Modified header.
-//
+
 
 BOOL
 IsHeuristicallyFresh(
@@ -873,7 +611,6 @@ LONGLONG llSynced
 		//
 		// Must be a last modified time to do the heuristic.
 		//
-		//printf("Must be a last modified time to do the heuristic\n");
 		return FALSE;
 	}
 
@@ -922,69 +659,8 @@ Comments:
 	return GetSystemTimeAsFileTime(pftGmt);
 }
 
-//%SDXROOT%\inetcore\wininet\http\cache.cxx
-
-/*============================================================================
-IsExpired (...)
-
-4/17/00 (RajeevD) Corrected back arrow behavior and wrote detailed comment.
-5/15/10 (EricLaw) Corrected FWD_BACK behavior, corrected heuristic expiration.
-
-We have a cache entry for the URL.  This routine determines whether we should
-synchronize, i.e. do an if-modified-since request.  This answer depends on 3
-factors: navigation mode, expiry on cache entry if any, and syncmode setting.
-
-1. There are two navigation modes:
-a. back/forward - using the back or forward buttons in the browser.
-b. hyperlinking - everything else.
-
-In b/f case we want to display what was previously shown.  Ideally
-wininet would cache multiple versions of a given URL and trident would specify
-which one to use when hitting back arrow.  For now, the best we can do is use
-the latest (only) cache entry.
-
-2. Expiry may fall into one of 3 buckets:
-a. no expiry information
-b. expiry in past of current time
-c. expiry in future of current time
-
-3. Syncmode may have 3 settings
-a. always - err on side of freshest data at expense of net perf.
-b. never - err on side of best net perf at expense of stale data.
-c. once-per-session - middle-of-the-road setting
-d. automatic - This is the default. Follow RFC2616 rules for heuristic
-expiration.
-
-Based on these factors, there are 5 possible result values in matrices below:
-0   don't sync
-1   sync
-A   don't sync if URL is heuristically fresh, else fallback to per-session
-S   sync if last-sync time was before start of the current session
-
-BACK/FORWARD
-When going back or forward, we don't sync.
-
-No Expiry       Expiry in Future    Expiry in Past
-Syncmode                        of Last-Access Time of Last-Access Time
-
-Always           0                   0                   0
-Never            0                   0                   0
-Per-Session      0                   0                   0
-Automatic        0                   0                   0
 
 
-NON-BACK/FORWARD
-Expiry info takes precedence, then we look at syncmode.
-
-No Expiry       Expiry in Future    Expiry in Past
-Syncmode                        of Current Time     of Current Time
-
-Always           1                   0                   1
-Never            0                   0                   1
-Per-Session      S                   0                   1
-Automatic        A                   0                   1
-
-============================================================================*/
 
 BOOL IsExpired(
 	__in DWORD dwEntryType,
@@ -1102,40 +778,11 @@ FalseExpire:
 		if ((dwEntryType & STATIC_CACHE_ENTRY) != 0)
 		{
 			//
-			// We believe this entry never actually changes.
 			// Check the entry if interval since last checked
 			// is less than 25% of the time we had it cached.
 			//
 			printf("Check the entry if interval since last checked is less than 25 percent of the time we had it cached.IsExpired STATIC_CACHE_ENTRY Now: %I64d ; Synced: %I64d ; Now-Synced: %I64d \n", llNow, llSynced, llNow-llSynced);
-			/*
-			struct CACHE_ENTRY_INFOEXW : INTERNET_CACHE_ENTRY_INFOW
-			{
-			FILETIME ftDownload;
-			FILETIME ftPostCheck;
-			};
 
-			typedef struct _INTERNAL_CACHE_ENTRY_INFOEX {
-			DWORD dwStructSize;         // version of cache system.
-			PSTR lpszSourceUrlName;     // embedded pointer to the URL name string.
-			PWSTR lpwszLocalFileName;   // embedded pointer to the local file name.
-			DWORD CacheEntryType;       // cache type bit mask.
-			DWORD dwUseCount;           // current users count of the cache entry.
-			DWORD dwHitRate;            // num of times the cache entry was retrieved.
-			DWORD dwSizeLow;            // low DWORD of the file size.
-			DWORD dwSizeHigh;           // high DWORD of the file size.
-			FILETIME LastModifiedTime;  // last modified time of the file in GMT format.
-			FILETIME ExpireTime;        // expire time of the file in GMT format
-			FILETIME LastAccessTime;    // last accessed time in GMT format
-			FILETIME LastSyncTime;      // last time the URL was synchronized
-			// with the source
-			PSTR lpHeaderInfo;          // embedded pointer to the header info.
-			DWORD dwHeaderInfoSize;     // size of the above header.
-			PSTR lpszFileExtension;     // File extension used to retrive the urldata as a file.
-			DWORD dwExemptDelta;        // Exemption delta from last access time.
-			FILETIME ftDownload;
-			FILETIME ftPostCheck;
-			} INTERNAL_CACHE_ENTRY_INFOEX, *PINTERNAL_CACHE_ENTRY_INFOEX;
-			*/
 			llSinceLastCheck = llNow - llSynced;
 			llSinceDownload = llNow - llDownload;
 

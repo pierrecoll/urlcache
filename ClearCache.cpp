@@ -42,7 +42,7 @@ void CClearCache::ClearTemporary(BOOL bSelectiveDelete, LPSTR lpszSearch)
 {
 	CCacheEntry CacheEntry;
 
-	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.First();
+	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.First(TEMPORARY_CACHE_PREFIX);
 	nEntries = 0;
 	nEntriesDeleted = 0;
 	if (bSelectiveDelete == FALSE)
@@ -81,7 +81,7 @@ void CClearCache::ClearSelectTemporary(LPTSTR Extension)
 {
 	CCacheEntry CacheEntry;
 
-	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.First();
+	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.First(TEMPORARY_CACHE_PREFIX);
 
 	while(pInfo)
 	{
@@ -103,7 +103,7 @@ void CClearCache::ClearSelectTemporary(LPTSTR Extension)
 void CClearCache::ClearCookies(BOOL bSelectiveDelete, LPSTR lpszSearch)
 {
 	CCacheEntry CacheEntry;
-	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.FirstCookie();
+	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.First(COOKIE_CACHE_PREFIX);
 	
 	if (bSelectiveDelete == FALSE)
 	{
@@ -136,7 +136,7 @@ void CClearCache::ClearHistory()
 {
 	CCacheEntry CacheEntry;
 
-	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.FirstHistory();
+	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.First(HISTORY_CACHE_PREFIX);
 
 	RegDeleteKey(HKEY_CURRENT_USER, TEXT("Software\\Microsoft\\Internet Explorer\\TypedURLs"));
 	RegDeleteKey(HKEY_CURRENT_USER, TEXT("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RunMRU"));
@@ -183,7 +183,7 @@ void CClearCache::ClearAll()
 {
 	CCacheEntry CacheEntry;
 
-	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.First();
+	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.First(TEMPORARY_CACHE_PREFIX);
 
 	while(pInfo)
 	{

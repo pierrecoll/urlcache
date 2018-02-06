@@ -56,24 +56,12 @@ class CCache
 
 	public:
 
-		void DisplayCookies		();
-		void DisplayTemporary	();
-		void DisplayHistory		();
-		void DisplayEmieUserList();
-		void DisplayEmieSiteList();
-		void DisplayDOMStore();
-		void Displayiedownload();
+		void Display	(LPSTR lpSzContainer);
 		void DisplayAll();
 
 
 		BOOL  SearchCache(INTERNET_CACHE_ENTRY_INFO* pInfo, LPSTR lpszSearch, BOOL bDelete);
-		void SearchCookies		(LPSTR lpszSourceUrlName,BOOL bDelete);
-		void SearchTemporary	(LPSTR lpszSourceUrlName, BOOL bDelete);
-		void SearchHistory		(LPSTR lpszSourceUrlName, BOOL bDelete);
-		void SearchEmieUserList		(LPSTR lpszSourceUrlName, BOOL bDelete);
-		void SearchEmieSiteList		(LPSTR lpszSourceUrlName, BOOL bDelete);
-		void SearchDOMStore (LPSTR lpszSourceUrlName, BOOL bDelete);
-		void Searchiedownload(LPSTR lpszSourceUrlName, BOOL bDelete);
+		void Search(LPSTR lpszContainer, LPSTR lpszSourceUrlName, BOOL bDelete);
 		void SearchAll			(LPSTR lpszSourceUrlName, BOOL bDelete);
 		void DisplayCacheEntry(INTERNET_CACHE_ENTRY_INFO*);
 		BOOL DelCacheEntry(INTERNET_CACHE_ENTRY_INFO* pInfo);

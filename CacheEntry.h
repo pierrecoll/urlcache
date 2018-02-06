@@ -8,12 +8,6 @@
 #include "CacheInfo.h"
 #include <WinInet.h>
 
-
-#define EMIE_SITELIST_CACHE_PREFIX _T("EmieSiteList:")
-#define EMIE_USERLIST_CACHE_PREFIX _T("EmieUserList:")
-#define DOMSTORE_CACHE_PREFIX _T("DOMStore:")
-#define IEDOWNLOAD_CACHE_PREFIX _T("iedownload:")
-
 class CCacheEntry  
 {
 	public:
@@ -29,13 +23,6 @@ class CCacheEntry
 	public:
 
 		LPINTERNET_CACHE_ENTRY_INFO		First(LPCTSTR lpszSearchPattern = NULL);
-		LPINTERNET_CACHE_ENTRY_INFO		FirstCookie();
-		LPINTERNET_CACHE_ENTRY_INFO		FirstHistory();
-		LPINTERNET_CACHE_ENTRY_INFO		FirstEmieUser();
-		LPINTERNET_CACHE_ENTRY_INFO		FirstEmieSite();
-		LPINTERNET_CACHE_ENTRY_INFO		FirstDOMStore();
-		LPINTERNET_CACHE_ENTRY_INFO		Firstiedownload();
-
 
 		LPINTERNET_CACHE_ENTRY_INFO		Next();
 
