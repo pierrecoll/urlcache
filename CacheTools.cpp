@@ -437,9 +437,9 @@ int main(int argc, char* argv[])
 					}
 				}
 				
-				if (LoopStringUpper(arg,":h") != 0) ClearCache.ClearHistory();
-				else if (LoopStringUpper(arg,":c") != 0) ClearCache.ClearCookies(bSelectiveDelete,argv[i+2]);
-				else if (LoopStringUpper(arg,":t") != 0) ClearCache.ClearTemporary(bSelectiveDelete, argv[i + 2]);
+				if (LoopStringUpper(arg,":h") != 0) ClearCache.Clear(HISTORY_CACHE_PREFIX, bSelectiveDelete, argv[i + 2]);
+				else if (LoopStringUpper(arg,":c") != 0) ClearCache.Clear(COOKIE_CACHE_PREFIX,  bSelectiveDelete,argv[i+2]);
+				else if (LoopStringUpper(arg,":t") != 0) ClearCache.Clear(TEMPORARY_CACHE_PREFIX, bSelectiveDelete, argv[i + 2]);
 				else if (LoopStringUpper(arg,":a") != 0) ClearCache.ClearAll();
 				else
 				{

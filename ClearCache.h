@@ -24,10 +24,7 @@ class CClearCache
 		int nEntries;
 
 	public:
-		void		ClearTemporary(BOOL, LPSTR);
-		void		ClearHistory();
-		void		ClearCookies(BOOL, LPSTR);
-		void		ClearSelectTemporary(LPTSTR);
+		void		Clear(LPSTR, BOOL, LPSTR);
 		void		ClearAll();
 		BOOL  CClearCache::SearchCache(INTERNET_CACHE_ENTRY_INFO* pInfo, LPSTR lpszSearch);
 

@@ -180,7 +180,7 @@ bool CCacheEntry::IsHistory(DWORD dwType)
 //////////////////////////////////////////////////////////////////////
 bool CCacheEntry::IsTemporary(DWORD dwType)
 {
-	return (!IsCookie(dwType) && !IsHistory(dwType));
+	return (dwType == NORMAL_CACHE_ENTRY ? TRUE:FALSE);
 }
 
 
