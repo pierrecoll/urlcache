@@ -138,11 +138,6 @@ void CCache::SearchAll(LPSTR lpszSearch,BOOL bDelete)
 	Search(HISTORY_CACHE_PREFIX,lpszSearch,bDelete);
 	Search(TEMPORARY_CACHE_PREFIX,lpszSearch,bDelete);
 	Search(COOKIE_CACHE_PREFIX, lpszSearch,bDelete);
-	//Version 1.21
-	Search(EMIE_SITELIST_CACHE_PREFIX, lpszSearch, bDelete);
-	Search(EMIE_USERLIST_CACHE_PREFIX,lpszSearch, bDelete);
-	Search(DOMSTORE_CACHE_PREFIX,lpszSearch, bDelete);
-	Search(IEDOWNLOAD_CACHE_PREFIX,lpszSearch, bDelete);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -563,10 +558,6 @@ void CCache::DisplayAll()
 	Display(HISTORY_CACHE_PREFIX);
 	Display(TEMPORARY_CACHE_PREFIX);
 	Display(COOKIE_CACHE_PREFIX);
-	Display(EMIE_USERLIST_CACHE_PREFIX);
-	Display(EMIE_SITELIST_CACHE_PREFIX);
-	Display(DOMSTORE_CACHE_PREFIX);
-	Display(IEDOWNLOAD_CACHE_PREFIX);
 }
 
 //1.23

@@ -27,7 +27,7 @@
 
 void DisplayHelp()
 {
-	printf("UrlCache : Tool to clear, display, search or delete Cookies, History,DOMStore, EMIE and Temporary Internet WinINet url cache container entries\n\n");
+	printf("UrlCache : Tool to clear, display, search or delete Cookies, Histor and Temporary Internet WinINet url cache container entries\n\n");
 	printf("pierrelc@microsoft.com (Original idea Francois Bernis)\r\n");
 	printf("Version 1.4 February 2018\r\n");
 	printf("Uses WinINet Url cache APIs https://msdn.microsoft.com/en-us/library/aa385473(v=vs.85).aspx\r\n");
@@ -46,10 +46,6 @@ void DisplayHelp()
 	printf("    -l:c\tLists all entries in Cookies\n");
 	printf("    -l:t\tLists all entries in Temporary Internet Files\n");
 	printf("    -l:a\tLists all above\n\n");
-	printf("    -l:u\tLists all entries in EMIE User List\n");
-	printf("    -l:s\tLists all entries in EMIE Site List\n");
-	printf("    -l:d\tLists all entries in DOMStore\n");
-	printf("    -l:i\tLists all entries in iedownload\n");
 	
 	printf("    To prevent displaying one or more cache entries info use the switches below\n\n");
 	printf("      -r:StructSize\t for StructSize\n");
@@ -77,10 +73,6 @@ void DisplayHelp()
 	printf("    -s:c\tSearches Cookies \n");
 	printf("    -s:t\tSearches Temporary Internet Files\n");
 	printf("    -s:a\tSearches all above\n");
-	printf("    -s:u\tSearches EMIE User List\n");
-	printf("    -s:s\tSearches EMIE Site List\n");	
-	printf("    -s:d\tSearches DOMStore\n");
-	printf("    -s:i\tSearches iedownload\n");
 
 	printf("    [SourceUrlName | LocalFileName | HeaderInfo | ExpireTime] text\n");
 	printf("    SourceUrlName and LocalFileName can mention different strings separated by *\n");
@@ -96,10 +88,7 @@ void DisplayHelp()
 	printf("    -d:c \tDeletes Cookie entries\n");
 	printf("    -d:t \tDeletes Temporary Internet Files entries\n");
 	printf("    -d:a \tDeletes all entries\n");
-	printf("    -d:u \tDeletes EMIE User List entries\n");
-	printf("    -d:s \tDeletes EMIE Site List entries\n");		
-	printf("    -d:d \tDeletes DOMStore entries\n");
-	printf("    -d:i \tDeletes iedownload entries\n");
+
 
 	printf("    [SourceUrlName | LocalFileName | HeaderInfo | ExpireTime] text\n");
 	printf("    Caution: no warning\n");
