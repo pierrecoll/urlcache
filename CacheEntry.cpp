@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////
 CCacheEntry::CCacheEntry()
 {
-
+	m_CacheHandle = NULL;
 }
 //////////////////////////////////////////////////////////////////////
 // Methode : ~CCacheEntry
@@ -38,7 +38,7 @@ LPINTERNET_CACHE_ENTRY_INFO CCacheEntry::First(LPCTSTR lpszSearchPattern)
 {
 	//Close previous handle
 
-	if(m_CacheHandle == NULL)
+	if(m_CacheHandle != NULL)
 	{
 		BOOL bReturn=FALSE;
 		bReturn=::FindCloseUrlCache(m_CacheHandle);

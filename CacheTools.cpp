@@ -29,7 +29,7 @@ void DisplayHelp()
 {
 	printf("UrlCache : Tool to clear, display, search or delete Cookies, History,DOMStore, EMIE and Temporary Internet WinINet url cache container entries\n\n");
 	printf("pierrelc@microsoft.com (Original idea Francois Bernis)\r\n");
-	printf("Version 1.33 February 2018\r\n");
+	printf("Version 1.4 February 2018\r\n");
 	printf("Uses WinINet Url cache APIs https://msdn.microsoft.com/en-us/library/aa385473(v=vs.85).aspx\r\n");
 	printf("To work with the cache files located in the Low integrity directory , you can copy urlcache.exe to a directory with Low integrity (like %%TEMP%%\\Low) and run urlcache.exe from this directory\r\n");
 	printf("\tSee https://blogs.msdn.microsoft.com/ieinternals/2010/08/26/writing-files-from-low-integrity-processes/ for more info on Low integrity store\r\n");
@@ -40,12 +40,6 @@ void DisplayHelp()
 	printf("    -c:c\tClears Cookies\n");
 	printf("    -c:t\tClears Temporary Internet Files\n");
 	printf("    -c:a\tClears all  above\n\n");
-	printf("    [SourceUrlName | LocalFileName | HeaderInfo | ExpireTime] text\n");
-	printf("    SourceUrlName and LocalFileName can mention different strings separated by *\n");
-	printf("    For example, to delete all entries in TIF containing wpad in the SourceUrlName field : \n");
-	printf("       urlcache  -c:t SourceUrlName wpad\n\n");
-	printf("    To delete all cookies containing msdn or technet in the LocalFileName field : \n");
-	printf("       urlcache  -c:c LocalFileName msdn*technet\n\n");
 
 	printf("  -l : To list  all cache entries of an url cache container, use the options listed below\n\n");
 	printf("    -l:h\tLists all entries in History\n");
@@ -271,41 +265,42 @@ int main(int argc, char* argv[])
 		for (i=1;i<argc;i++)
 		{
 			strcpy_s(arg,argv[i]);
-			_strupr_s(arg);
-
-
+			//_strupr_s(arg);
+			char *Parameter = strstr(arg, ":");
+			
 			//Help
-			if ((LoopStringUpper(arg,"-h") != NULL) || (LoopStringUpper(arg,"-?") != NULL))
+			if ((!strcmp(arg, "-h")) || (!strcmp(arg, "-?")) || (!Parameter))
 			{
 				DisplayHelp();
-			};
+				exit(0L);
+			}
+			Parameter++;
+			char CachePrefix[256];
+			lstrcpyn(CachePrefix, Parameter, 250);
+			lstrcat(CachePrefix, ":");
+			char Action[4];
+			strncpy(Action,arg,sizeof(Action));
+			Action[3] = '\0';
 
 			//List
-			if (LoopStringUpper(arg,"-l") != NULL) 
+			if (strcmp(Action,"-l:") == NULL) 
 			{
 				if (argc >= i+2) 
 				{
-					printf("Too many parameters. Url not used with -l parameter\r\n");
+					printf("Too many parameters. Paramater not used with -l parameter\r\n");
 				 	printf("\nPlease read help using -h \n\n");
-					return nRetCode;
+					exit(0L);
 				}				
-				if (LoopStringUpper(arg,":h") != NULL) Cache.Display(HISTORY_CACHE_PREFIX);
-				else if (LoopStringUpper(arg,":c") != 0) Cache.Display(COOKIE_CACHE_PREFIX);
-				else if (LoopStringUpper(arg,":t") != 0) Cache.Display(TEMPORARY_CACHE_PREFIX);
-				else if (LoopStringUpper(arg,":a") != 0) Cache.DisplayAll();
-				else if (LoopStringUpper(arg, ":u") != 0) Cache.Display(EMIE_USERLIST_CACHE_PREFIX);
-				else if (LoopStringUpper(arg, ":s") != 0) Cache.Display(EMIE_SITELIST_CACHE_PREFIX);
-				else if (LoopStringUpper(arg, ":d") != 0) Cache.Display(DOMSTORE_CACHE_PREFIX);
-				else if (LoopStringUpper(arg, ":i") != 0) Cache.Display(IEDOWNLOAD_CACHE_PREFIX);
-				else
-				{
-					printf("\nSyntax error please read help using -h \n\n");
-					exit(0);
-				}
+				if      (strcmp(Parameter,"h") == 0)  Cache.Display(HISTORY_CACHE_PREFIX);
+				else if (strcmp(Parameter, "c") == 0) Cache.Display(COOKIE_CACHE_PREFIX);
+				else if (strcmp(Parameter, "t") == 0) Cache.Display(TEMPORARY_CACHE_PREFIX);
+				else if (strcmp(Parameter, "a") == 0) Cache.DisplayAll();
+				else Cache.Display(CachePrefix);
+				exit(0L);				
 			}
 
 			//Search
-			if (LoopStringUpper(arg,"-s") != NULL)
+			if (strcmp(Action, "-s:") == NULL)
 			{
 				//-s requires a source URL name
 				/*if (argc != i+2) 
@@ -343,23 +338,16 @@ int main(int argc, char* argv[])
 				}
 				printf("Searching for entries where %s contains : %s\r\n",argv[i+1], argv[i+2]);
 				//FALSE as last  parameter means search only, no delete
-				if (LoopStringUpper(arg,":h") != NULL) Cache.Search(HISTORY_CACHE_PREFIX,argv[i+2],FALSE);
-				else if (LoopStringUpper(arg,":c") != 0) Cache.Search(COOKIE_CACHE_PREFIX,argv[i+2],FALSE);
-				else if (LoopStringUpper(arg,":t") != 0) Cache.Search(TEMPORARY_CACHE_PREFIX,argv[i+2],FALSE);
-				else if (LoopStringUpper(arg,":a") != 0) Cache.SearchAll(argv[i+2],FALSE);
-				else if (LoopStringUpper(arg, ":u") != 0) Cache.Search(EMIE_USERLIST_CACHE_PREFIX, argv[i + 2], FALSE);
-				else if (LoopStringUpper(arg, ":s") != 0) Cache.Search(EMIE_SITELIST_CACHE_PREFIX, argv[i + 2], FALSE);
-				else if (LoopStringUpper(arg, ":d") != 0) Cache.Search(DOMSTORE_CACHE_PREFIX,argv[i + 2], FALSE);
-				else if (LoopStringUpper(arg, ":i") != 0) Cache.Search(IEDOWNLOAD_CACHE_PREFIX, argv[i + 2], FALSE);
-				else
-				{
-					printf("\nSyntax error please read help using -h \n\n");
-					exit(0);
-				}
+				if      (strcmp(Parameter, "h") == 0) Cache.Search(HISTORY_CACHE_PREFIX,argv[i+2],FALSE);
+				else if (strcmp(Parameter, "c") == 0) Cache.Search(COOKIE_CACHE_PREFIX,argv[i+2],FALSE);
+				else if (strcmp(Parameter, "t") == 0) Cache.Search(TEMPORARY_CACHE_PREFIX,argv[i+2],FALSE);
+				else if (strcmp(Parameter, "a") == 0) Cache.SearchAll(argv[i+2],FALSE);
+				else                                   Cache.Search(CachePrefix, argv[i + 2], FALSE);
+				exit(0L);
 			}
 
 			//Delete
-			if (LoopStringUpper(arg,"-d") != NULL)
+			if (strcmp(Action, "-d:") == NULL)
 			{
 				if ((argv[i + 1]) == NULL)
 				{
@@ -390,63 +378,32 @@ int main(int argc, char* argv[])
 				}
 				printf("Deleting entries where %s contains : %s\r\n",argv[i+1], argv[i+2]);
 				//FALSE as last  parameter means search only, no delete
-				if (LoopStringUpper(arg, ":h") != NULL) Cache.Search(HISTORY_CACHE_PREFIX, argv[i + 2], TRUE);
-				else if (LoopStringUpper(arg, ":c") != 0) Cache.Search(COOKIE_CACHE_PREFIX, argv[i + 2], TRUE);
-				else if (LoopStringUpper(arg, ":t") != 0) Cache.Search(TEMPORARY_CACHE_PREFIX, argv[i + 2], TRUE);
-				else if (LoopStringUpper(arg, ":a") != 0) Cache.SearchAll(argv[i + 2], TRUE);
-				else if (LoopStringUpper(arg, ":u") != 0) Cache.Search(EMIE_USERLIST_CACHE_PREFIX, argv[i + 2], TRUE);
-				else if (LoopStringUpper(arg, ":s") != 0) Cache.Search(EMIE_SITELIST_CACHE_PREFIX, argv[i + 2], TRUE);
-				else if (LoopStringUpper(arg, ":d") != 0) Cache.Search(DOMSTORE_CACHE_PREFIX, argv[i + 2], TRUE);
-				else if (LoopStringUpper(arg, ":i") != 0) Cache.Search(IEDOWNLOAD_CACHE_PREFIX, argv[i + 2], TRUE);
-				else
-				{
-					printf("\nSyntax error please read help using -h \n\n");
-					exit(0);
-				}
-
+				if      (strcmp(Parameter, "h") == 0) Cache.Search(HISTORY_CACHE_PREFIX, argv[i + 2], TRUE);
+				else if (strcmp(Parameter, "c") == 0) Cache.Search(COOKIE_CACHE_PREFIX, argv[i + 2], TRUE);
+				else if (strcmp(Parameter, "t") == 0) Cache.Search(TEMPORARY_CACHE_PREFIX, argv[i + 2], TRUE);
+				else if (strcmp(Parameter, "a") == 0) Cache.SearchAll(argv[i + 2], TRUE);
+				else                                   Cache.Search(CachePrefix, argv[i + 2], TRUE);
+				exit(0);
 			}
 
 			//Clear
 			if (LoopStringUpper(arg,"-c") != 0)
 			{
-				//160615 adding option for selective deletion
-				BOOL bSelectiveDelete = FALSE;
-				if ((argv[i + 1]) != NULL)
+				if (argc >= i + 2)
 				{
-					bSelectiveDelete = TRUE;
-					if (!_strcmpi(argv[i + 1], "SourceUrlName"))
-					{
-						ClearCache.m_bSearch_lpszSourceUrlName = 1;
-					}
-					else if (!_strcmpi(argv[i + 1], "LocalFileName"))
-					{
-						ClearCache.m_bSearch_lpszLocalFileName = 1;
-					}
-					else if (!_strcmpi(argv[i + 1], "HeaderInfo"))
-					{
-						ClearCache.m_bSearch_lpHeaderInfo = 1;
-					}
-					else if (!_strcmpi(argv[i + 1], "ExpireTime"))
-					{
-						ClearCache.m_bSearch_ExpireTime = 1;
-					}
-					else
-					{
-						printf("\nSyntax error using -c option.Please read help using -h\n\n");
-						exit(-1L);
-					}
+					printf("Too many parameters. Paramater not needed with -c parameter\r\n");
+					printf("\nPlease read help using -h\r\n");
+					exit(0L);
 				}
 				
-				if (LoopStringUpper(arg,":h") != 0) ClearCache.Clear(HISTORY_CACHE_PREFIX, bSelectiveDelete, argv[i + 2]);
-				else if (LoopStringUpper(arg,":c") != 0) ClearCache.Clear(COOKIE_CACHE_PREFIX,  bSelectiveDelete,argv[i+2]);
-				else if (LoopStringUpper(arg,":t") != 0) ClearCache.Clear(TEMPORARY_CACHE_PREFIX, bSelectiveDelete, argv[i + 2]);
-				else if (LoopStringUpper(arg,":a") != 0) ClearCache.ClearAll();
-				else
-				{
-					printf("\nSyntax error please read help using -h \n\n");
-					exit(0);
-				}		
+				if (LoopStringUpper(arg,":h") != 0)      ClearCache.Clear(HISTORY_CACHE_PREFIX);
+				else if (LoopStringUpper(arg,"c") != 0) ClearCache.Clear(COOKIE_CACHE_PREFIX);
+				else if (LoopStringUpper(arg,"t") != 0) ClearCache.Clear(TEMPORARY_CACHE_PREFIX);
+				else if (LoopStringUpper(arg,"a") != 0) ClearCache.ClearAll();
+				else                                     ClearCache.Clear(CachePrefix);
+
 				printf("Number of entries found: %d. Number of entries deleted: %d\r\n", ClearCache.nEntries, ClearCache.nEntriesDeleted);
+				exit(0);
 			}
 		}
 	}

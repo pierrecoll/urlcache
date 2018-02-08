@@ -24,7 +24,7 @@ class CClearCache
 		int nEntries;
 
 	public:
-		void		Clear(LPSTR, BOOL, LPSTR);
+		void		Clear(LPSTR);
 		void		ClearAll();
 		BOOL  CClearCache::SearchCache(INTERNET_CACHE_ENTRY_INFO* pInfo, LPSTR lpszSearch);
 
