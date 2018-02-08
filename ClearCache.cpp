@@ -51,11 +51,8 @@ void CClearCache::Clear(LPSTR lpszContainer, BOOL bSelectiveDelete, LPSTR lpszSe
 		while (pInfo)
 		{
 			nEntries++;
-			if (CacheEntry.IsTemporary(pInfo->CacheEntryType))
-			{
-				nEntriesDeleted++;
-				DelCacheEntry(pInfo);
-			}
+			nEntriesDeleted++;
+			DelCacheEntry(pInfo);			
 			pInfo = CacheEntry.Next();
 		}
 		if (lstrcmp(lpszContainer, HISTORY_CACHE_PREFIX) == 0)
@@ -98,11 +95,7 @@ void CClearCache::Clear(LPSTR lpszContainer, BOOL bSelectiveDelete, LPSTR lpszSe
 			pInfo = CacheEntry.Next();
 		}
 	}
-
-
 }
-
-
 
 //////////////////////////////////////////////////////////////////////
 // Methode : DelCacheEntry
@@ -118,19 +111,16 @@ bool CClearCache::DelCacheEntry(INTERNET_CACHE_ENTRY_INFO* pInfo)
 void CClearCache::ClearAll()
 {
 	CCacheEntry CacheEntry;
-
 	LPINTERNET_CACHE_ENTRY_INFO pInfo = CacheEntry.First(TEMPORARY_CACHE_PREFIX);
 
 	while(pInfo)
 	{
-
 		DelCacheEntry(pInfo);
-
 		pInfo = CacheEntry.Next();
 	}
-
 	_tprintf(_T("Cache Cleared\n"));
 }
+
 //////////////////////////////////////////////////////////////////////
 // Methode : CCache
 // Resume : Search cache entry
