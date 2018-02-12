@@ -12,6 +12,7 @@
 #define HISTORY_CACHE_PREFIX _T("visited:")
 #define TEMPORARY_CACHE_PREFIX _T("")
 
+void CreateLowProcess();
 
 class CCacheInfo
 {

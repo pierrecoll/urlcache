@@ -4,6 +4,8 @@
 #include "Cache.h"
 #include "cacheinfo.h"
 #include <stdio.h>
+#include <sddl.h>
+
 
 //////////////////////////////////////////////////////////////////////
 // Classe : Main
@@ -25,29 +27,50 @@
 //1.31 Adding support for iedownload
 //1.32 major rewrite of functions/ no added features
 
+DWORD ErrorPrint();
+
 void DisplayHelp()
 {
-	printf("UrlCache : Tool to clear, display, search or delete Cookies, Histor and Temporary Internet WinINet url cache container entries\n\n");
+	printf("UrlCache : Tool to clear, display, search or delete Cookies, History , Temporary Internet or any other existing WinINet Url Cache Container entries\n\n");
 	printf("pierrelc@microsoft.com (Original idea Francois Bernis)\r\n");
-	printf("Version 1.4 February 2018\r\n");
-	printf("Uses WinINet Url cache APIs https://msdn.microsoft.com/en-us/library/aa385473(v=vs.85).aspx\r\n");
-	printf("To work with the cache files located in the Low integrity directory , you can copy urlcache.exe to a directory with Low integrity (like %%TEMP%%\\Low) and run urlcache.exe from this directory\r\n");
-	printf("\tSee https://blogs.msdn.microsoft.com/ieinternals/2010/08/26/writing-files-from-low-integrity-processes/ for more info on Low integrity store\r\n");
-	printf("\nOptions : \n\n");
-	printf("  Help : -h or -?\n\n");
-	printf("  -c : To clear all cache entries of an url cache container , use the options listed below\n\n");
-	printf("    -c:h\tClears previous Day History But Not Today (By Design)\n");
-	printf("    -c:c\tClears Cookies\n");
-	printf("    -c:t\tClears Temporary Internet Files\n");
-	printf("    -c:a\tClears all  above\n\n");
-
-	printf("  -l : To list  all cache entries of an url cache container, use the options listed below\n\n");
-	printf("    -l:h\tLists all entries in History\n");
-	printf("    -l:c\tLists all entries in Cookies\n");
-	printf("    -l:t\tLists all entries in Temporary Internet Files\n");
-	printf("    -l:a\tLists all above\n\n");
+	printf("Version 1.50 February 2018\r\n");
+	printf("Uses WinINet Url cache APIs https://msdn.microsoft.com/en-us/library/windows/desktop/aa383928(v=vs.85).aspx \r\n");
 	
-	printf("    To prevent displaying one or more cache entries info use the switches below\n\n");
+	printf("Help : -h or -?\n\n");
+
+	printf("-low To search low integrity containers (protected mode Internet Explorer)");
+	printf("\tSee https://msdn.microsoft.com/en-us/library/bb250462(VS.85).aspx(d=robot) for more info on Low integrity store\r\n");
+
+	printf("General syntax : -Action:Container for the action\n\n");
+
+	printf("Actions :\n");
+	printf(" \t-c clears all cache entries for the given cache container\n");
+	printf(" \t-l lists  all cache entries for the given cache container\n");
+	printf(" \t-s search cache entries in the given cache container using given criteria\n");
+	printf(" \t-d delete cache entries in the given cache container using given criteria\n\n");
+
+	printf("Caution: no warning for detete action!\n\n");
+
+	printf("Containers:\n");
+	printf(" \t:h History container\n");
+	printf(" \t:c Cookie container\n");
+	printf(" \t:t Temporary Internet Files container\n");
+	printf(" \t:name of an existing container for example iecompat\n\n");
+
+	printf("Search criteria:\n");
+	printf("\t[SourceUrlName | LocalFileName | HeaderInfo | ExpireTime] text\n");
+	printf("\tSourceUrlName and LocalFileName can mention different strings separated by *\n\n");
+
+	printf("\tFor example, to search all entries in TIF containing wpad in the SourceUrlName field : \n");
+	printf("\t   urlcache  -s:t SourceUrlName wpad\n\n");
+	printf("\tTo search all entries in TIF containing autoconfig in the HeaderInfo field : \n");
+	printf("\t   urlcache  -s:t HeaderInfo application/x-ns-proxy-autoconfig\n\n");
+	printf("\tTo delete all entries in TIF containing wpad or pac in the SourceUrlName field : \n");
+	printf("\t   urlcache  -d:t SourceUrlName wpad*pac\n\n");
+	
+	printf("Warning: Search is case sensitive!\n\n");
+
+	printf("To prevent displaying one or more cache entries info use the switches below\n\n");
 	printf("      -r:StructSize\t for StructSize\n");
 	printf("      -r:SourceUrlName\t for SourceUrlName\n");
 	printf("      -r:LocalFileName\t for LocalFileName\n");
@@ -68,35 +91,6 @@ void DisplayHelp()
 	printf("   For example : \n\n");
 	printf("     urlcache -r:StructSize -r:CacheEntryType will remove StructSize and CacheEntryType\n\n");
 	//add where StructSize/SourceurlName... is/contains/greater syntax
-	printf("  -s : To search cache entries, use the options listed below\n\n");
-	printf("    -s:h\tSearches History \n");
-	printf("    -s:c\tSearches Cookies \n");
-	printf("    -s:t\tSearches Temporary Internet Files\n");
-	printf("    -s:a\tSearches all above\n");
-
-	printf("    [SourceUrlName | LocalFileName | HeaderInfo | ExpireTime] text\n");
-	printf("    SourceUrlName and LocalFileName can mention different strings separated by *\n");
-	printf("    For example, to search all entries in TIF containing wpad in the SourceUrlName field : \n");
-	printf("       urlcache  -s:t SourceUrlName wpad\n\n");
-	printf("    To search all entries in TIF containing wpad or pac in the SourceUrlName field : \n"); 
-	printf("       urlcache  -s:t SourceUrlName wpad*pac\n\n");
-	printf("    For example, to search all entries in TIF containing autoconfig in the HeaderInfo field : \n");
-	printf("       urlcache  -s:t HeaderInfo application/x-ns-proxy-autoconfig\n\n");
-	
-	printf("  -d : To delete cache entries in an url cache container , use the options listed below\n\n");
-	printf("    -d:h \tDeletes History entries\n");
-	printf("    -d:c \tDeletes Cookie entries\n");
-	printf("    -d:t \tDeletes Temporary Internet Files entries\n");
-	printf("    -d:a \tDeletes all entries\n");
-
-
-	printf("    [SourceUrlName | LocalFileName | HeaderInfo | ExpireTime] text\n");
-	printf("    Caution: no warning\n");
-	printf("    SourceUrlName and LocalFileName can mention different strings separated by *\n");
-	printf("   For example : \n\n");
-	printf("    urlcache  -d:t SourceUrlName wpad\n");
-	printf("    urlcache  -d:t HeaderInfo application/x-ns-proxy-autoconfig\n\n");
-
 
 }
 //////////////////////////////////////////////////////////////////////
@@ -148,7 +142,23 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		if (argc==1) DisplayHelp(); 
+		if (argc == 1)
+		{
+			DisplayHelp();
+			exit(0L);
+		}
+		//first pass for low argument
+		//first pass just for -r argument
+		for (i = 1; i<argc; i++)
+		{
+			strcpy_s(arg, argv[i]);
+
+			if (LoopStringUpper(arg, "-low") != 0)
+			{
+				CreateLowProcess();
+				exit(0L);
+			}
+		}
 
 		//first pass just for -r argument
 		for (i=1;i<argc;i++)
@@ -251,6 +261,8 @@ int main(int argc, char* argv[])
 				}
 			}		
 		}
+
+
 		for (i=1;i<argc;i++)
 		{
 			strcpy_s(arg,argv[i]);
@@ -264,11 +276,11 @@ int main(int argc, char* argv[])
 				exit(0L);
 			}
 			Parameter++;
-			char CachePrefix[256];
+			char CachePrefix[256] = "";
 			lstrcpyn(CachePrefix, Parameter, 250);
 			lstrcat(CachePrefix, ":");
-			char Action[4];
-			strncpy(Action,arg,sizeof(Action));
+			char Action[5]="";
+			lstrcpyn(Action, arg,sizeof(Action));
 			Action[3] = '\0';
 
 			//List
@@ -399,3 +411,78 @@ int main(int argc, char* argv[])
 	return nRetCode;
 }
 
+//From https://msdn.microsoft.com/en-us/library/bb250462(VS.85).aspx(d=robot)
+void CreateLowProcess()
+{
+	BOOL bRet;
+	HANDLE hToken;
+	HANDLE hNewToken;
+
+	// Notepad is used as an example
+	WCHAR wszProcessName[MAX_PATH];
+	GetModuleFileNameW(NULL, wszProcessName,MAX_PATH-1);
+	WCHAR *lpwszCommandLine = GetCommandLineW();
+	//remove -low from command line
+	lpwszCommandLine += 8+wcslen(wszProcessName);
+
+	// Low integrity SID
+	WCHAR wszIntegritySid[20] = L"S-1-16-4096";
+	//WCHAR wszIntegritySid[129] = L"S-1-15-2-3624051433-2125758914-1423191267-1740899205-1073925389-3782572162-737981194-4256926629-1688279915-2739229046-3928706915";
+	PSID pIntegritySid = NULL;
+
+	TOKEN_MANDATORY_LABEL TIL = { 0 };
+	PROCESS_INFORMATION ProcInfo = { 0 };
+	STARTUPINFOW StartupInfo = { 0 };
+	ULONG ExitCode = 0;
+
+	if (OpenProcessToken(GetCurrentProcess(), MAXIMUM_ALLOWED, &hToken))
+	{
+		if (DuplicateTokenEx(hToken, MAXIMUM_ALLOWED, NULL,
+			SecurityImpersonation, TokenPrimary, &hNewToken))
+		{
+			if (ConvertStringSidToSidW(wszIntegritySid, &pIntegritySid))
+			{
+				TIL.Label.Attributes = SE_GROUP_INTEGRITY;
+				TIL.Label.Sid = pIntegritySid;
+
+				// Set the process integrity level
+				if (SetTokenInformation(hNewToken, TokenIntegrityLevel, &TIL,
+					sizeof(TOKEN_MANDATORY_LABEL) + GetLengthSid(pIntegritySid)))
+				{
+					// Create the new process at Low integrity
+					bRet = CreateProcessAsUserW(hNewToken, wszProcessName,
+						lpwszCommandLine, NULL, NULL, FALSE,
+						0, NULL, NULL, &StartupInfo, &ProcInfo);
+					if (!bRet)
+					{
+						printf("CreateProcessAsUserW failed\r\n");
+						ErrorPrint();
+					}
+				}
+				else
+				{
+					printf("SetTokenInformation failed\r\n");
+					ErrorPrint();
+				}
+				LocalFree(pIntegritySid);
+			}
+			else
+			{
+				printf("ConvertStringSidToSidW failed\r\n");
+				ErrorPrint();
+			}
+			CloseHandle(hNewToken);
+		}
+		else
+		{
+			printf("DuplicateTokenEx failed\r\n");
+			ErrorPrint();
+		}
+		CloseHandle(hToken);
+	}
+	else
+	{
+		printf("OpenProcessToken failed\r\n");
+		ErrorPrint();
+	}
+}

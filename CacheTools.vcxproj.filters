@@ -33,6 +33,9 @@
     <ClCompile Include="Cache.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="errorstr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CacheTools.rc">
