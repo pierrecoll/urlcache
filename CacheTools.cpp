@@ -44,7 +44,7 @@ void DisplayHelp()
 	printf("Help : -h or -?\n\n");
 
 	printf("-low To search low integrity containers (protected mode Internet Explorer)\r\n");
-	printf("\t Cannot be used when running as High Integrity (Administative command prompt)\r\n");
+	printf("\t Cannot be used when running as High Integrity (Administrative command prompt)\r\n");
 	printf("\tSee https://msdn.microsoft.com/en-us/library/bb250462(VS.85).aspx(d=robot) for more info on Low integrity store\r\n\n");
 
 	printf("General syntax : -Action:Container for the action\n\n");
@@ -300,7 +300,7 @@ int main(int argc, char* argv[])
 		{
 			if (argc >= i+2) 
 			{
-				printf("Too many parameters. Paramater not used with -l parameter\r\n");
+				printf("Too many parameters. Parameter not needed with -l action\r\n");
 				printf("\nPlease read help using -h \n\n");
 				exit(0L);
 			}				
@@ -339,9 +339,9 @@ int main(int argc, char* argv[])
 			}			
 			else
 			{
-				printf("\nNo criteria given for search: searching Source URL Name\n\n");
+				printf("\nNo criteria given for search: searching Source URL Name by default\r\n");
 				Cache.m_bSearch_lpszSourceUrlName = 1;
-				printf("Searching for entries where %s contains : %s\r\n", "Source URL Name", argv[i + 1]);
+				printf("Searching for entries where Source URL Name contains : %s\r\n", argv[i + 1]);
 				//FALSE as last  parameter means search only, no delete
 				if (strcmp(Parameter, "h") == 0) Cache.Search(HISTORY_CACHE_PREFIX, argv[i + 1], FALSE);
 				else if (strcmp(Parameter, "c") == 0) Cache.Search(COOKIE_CACHE_PREFIX, argv[i + 1], FALSE);
@@ -406,7 +406,7 @@ int main(int argc, char* argv[])
 		{
 			if (argc >= i + 2)
 			{
-				printf("Too many parameters. Paramater not needed with -c parameter\r\n");
+				printf("Too many parameters. Paramater not needed with -c action\r\n");
 				printf("\nPlease read help using -h\r\n");
 				exit(0L);
 			}
