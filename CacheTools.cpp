@@ -26,20 +26,26 @@
 //1.28 Adding support for DOMStore
 //1.31 Adding support for iedownload
 //1.32 major rewrite of functions/ no added features
+//1.40 adding support for using container name / removing specific containers
+//1.50 adding support for low integrity 
+//1.51 using source URL Name as default criteria for search
+//1.52 checking integrity level for -low option
 
 DWORD ErrorPrint();
+DWORD GetProcessIntegrityLevel();
 
 void DisplayHelp()
 {
 	printf("UrlCache : Tool to clear, display, search or delete Cookies, History , Temporary Internet or any other existing WinINet Url Cache Container entries\n\n");
 	printf("pierrelc@microsoft.com (Original idea Francois Bernis)\r\n");
-	printf("Version 1.50 February 2018\r\n");
+	printf("Version 1.52 February 2018\r\n");
 	printf("Uses WinINet Url cache APIs https://msdn.microsoft.com/en-us/library/windows/desktop/aa383928(v=vs.85).aspx \r\n");
 	
 	printf("Help : -h or -?\n\n");
 
-	printf("-low To search low integrity containers (protected mode Internet Explorer)");
-	printf("\tSee https://msdn.microsoft.com/en-us/library/bb250462(VS.85).aspx(d=robot) for more info on Low integrity store\r\n");
+	printf("-low To search low integrity containers (protected mode Internet Explorer)\r\n");
+	printf("\t Cannot be used when running as High Integrity (Administative command prompt)\r\n");
+	printf("\tSee https://msdn.microsoft.com/en-us/library/bb250462(VS.85).aspx(d=robot) for more info on Low integrity store\r\n\n");
 
 	printf("General syntax : -Action:Container for the action\n\n");
 
@@ -129,7 +135,7 @@ int main(int argc, char* argv[])
 	char arg[MAX_PATH];
 	CClearCache ClearCache;
 	CCache Cache;
-
+	DWORD dwProcessIntegrityLevel;
 	LPTSTR Ext;
 	Ext = 0;
 
@@ -139,275 +145,283 @@ int main(int argc, char* argv[])
 	{
 		_tprintf(_T("Fatal Error: MFC initialization failed\n"));
 		nRetCode = 1;
+		exit(-1L);
 	}
-	else
+
+	if (argc == 1)
 	{
-		if (argc == 1)
+		DisplayHelp();
+		exit(0L);
+	}
+	dwProcessIntegrityLevel= GetProcessIntegrityLevel();
+	//first pass for low argument
+	//first pass just for -r argument
+	for (i = 1; i<argc; i++)
+	{
+		strcpy_s(arg, argv[i]);
+
+		if (LoopStringUpper(arg, "-low") != 0)
+		{
+			if (dwProcessIntegrityLevel == SECURITY_MANDATORY_HIGH_RID)
+			{
+				printf("-low option cannot be run from an administrative command prompt (High Integrity Level)\r\n");
+				exit(-1L);
+			}
+			CreateLowProcess();
+			exit(0L);
+		}
+	}
+
+	//first pass just for -r argument
+	for (i=1;i<argc;i++)
+	{
+		strcpy_s(arg,argv[i]);
+
+		if (LoopStringUpper(arg,"-r") != 0)
+		{
+			Cache.m_b_Remove = 1;
+			if (LoopStringUpper(arg,":StructSize"))
+			{
+				Cache.m_bDisp_dwStructSize		= 0;
+			}
+			else if (LoopStringUpper(arg,":SourceUrlName"))	
+			{
+				Cache.m_bDisp_lpszSourceUrlName	= 0;
+			}
+			else if (LoopStringUpper(arg,":LocalFileName"))	
+			{
+				Cache.m_bDisp_lpszLocalFileName	= 0;
+			}
+			else if (LoopStringUpper(arg,":CacheEntryType"))	
+			{
+				Cache.m_bDisp_CacheEntryType		= 0;
+			}
+			else if (LoopStringUpper(arg,":UseCount"))		
+			{
+				Cache.m_bDisp_dwUseCount			= 0;
+			}
+			else if (LoopStringUpper(arg,":HitRate"))		
+			{
+				Cache.m_bDisp_dwHitRate			= 0;
+			}
+			else if (LoopStringUpper(arg,":SizeLow"))		
+			{
+				Cache.m_bDisp_dwSizeLow			= 0;
+			}
+			else if (LoopStringUpper(arg,":SizeHigh"))		
+			{
+				Cache.m_bDisp_dwSizeHigh			= 0;
+			}
+			else if (LoopStringUpper(arg,":LastModifiedTime"))
+			{
+				Cache.m_bDisp_LastModifiedTime	= 0;
+			}
+			else if (LoopStringUpper(arg,":ExpireTime"))		
+			{
+				Cache.m_bDisp_ExpireTime			= 0;
+			}
+			else if (LoopStringUpper(arg,":LastAccessTime"))	
+			{
+				Cache.m_bDisp_LastAccessTime		= 0;	 
+			}
+			else if (LoopStringUpper(arg,":LastSyncTime"))	
+			{
+				Cache.m_bDisp_LastSyncTime		= 0;
+			}
+			//HeaderInfoSize needs to be before HeaderInfo because of the API we are using 
+			else if (LoopStringUpper(arg, ":HeaderInfoSize"))
+			{
+				Cache.m_bDisp_dwHeaderInfoSize = 0;
+			}
+			else if (LoopStringUpper(arg,":HeaderInfo"))		
+			{
+				Cache.m_bDisp_lpHeaderInfo		= 0;
+			}
+			else if (LoopStringUpper(arg,":FileExtension"))	
+			{
+				Cache.m_bDisp_lpszFileExtension	= 0;
+			}
+			else if (LoopStringUpper(arg, ":Expiration"))
+			{
+				Cache.m_bDisp_Expiration = 0;
+			}
+			else if (LoopStringUpper(arg,":a"))	
+			{
+				//Cache.m_bDisp_lpszSourceUrlName = 0;
+				Cache.m_bDisp_dwStructSize		= 0;
+				Cache.m_bDisp_lpszFileExtension	= 0;
+				Cache.m_bDisp_lpszLocalFileName	= 0;
+				Cache.m_bDisp_CacheEntryType	= 0;
+				Cache.m_bDisp_dwUseCount		= 0;
+				Cache.m_bDisp_dwHitRate			= 0;
+				Cache.m_bDisp_dwSizeLow			= 0;
+				Cache.m_bDisp_dwSizeHigh		= 0;
+				Cache.m_bDisp_LastModifiedTime	= 0;
+				Cache.m_bDisp_ExpireTime		= 0;
+				Cache.m_bDisp_LastAccessTime	= 0;	 
+				Cache.m_bDisp_LastSyncTime		= 0;
+				Cache.m_bDisp_lpHeaderInfo		= 0;
+				Cache.m_bDisp_dwHeaderInfoSize	= 0;
+				Cache.m_bDisp_lpszFileExtension	= 0;
+				Cache.m_bDisp_Expiration		= 0;
+
+			}
+			else
+			{
+				printf("\nSyntax error please read help using -h \n\n");
+				exit(0);
+			}
+		}		
+	}
+
+
+	for (i=1;i<argc;i++)
+	{
+		strcpy_s(arg,argv[i]);
+		//_strupr_s(arg);
+		char *Parameter = strstr(arg, ":");
+			
+		//Help
+		if ((!strcmp(arg, "-h")) || (!strcmp(arg, "-?")) || (!Parameter))
 		{
 			DisplayHelp();
 			exit(0L);
 		}
-		//first pass for low argument
-		//first pass just for -r argument
-		for (i = 1; i<argc; i++)
-		{
-			strcpy_s(arg, argv[i]);
+		Parameter++;
+		char CachePrefix[256] = "";
+		lstrcpyn(CachePrefix, Parameter, 250);
+		lstrcat(CachePrefix, ":");
+		char Action[5]="";
+		lstrcpyn(Action, arg,sizeof(Action));
+		Action[3] = '\0';
 
-			if (LoopStringUpper(arg, "-low") != 0)
+		//List
+		if (strcmp(Action,"-l:") == NULL) 
+		{
+			if (argc >= i+2) 
 			{
-				CreateLowProcess();
+				printf("Too many parameters. Paramater not used with -l parameter\r\n");
+				printf("\nPlease read help using -h \n\n");
 				exit(0L);
-			}
+			}				
+			if      (strcmp(Parameter,"h") == 0)  Cache.Display(HISTORY_CACHE_PREFIX);
+			else if (strcmp(Parameter, "c") == 0) Cache.Display(COOKIE_CACHE_PREFIX);
+			else if (strcmp(Parameter, "t") == 0) Cache.Display(TEMPORARY_CACHE_PREFIX);
+			else if (strcmp(Parameter, "a") == 0) Cache.DisplayAll();
+			else Cache.Display(CachePrefix);
+			exit(0L);				
 		}
 
-		//first pass just for -r argument
-		for (i=1;i<argc;i++)
+		//Search
+		if (strcmp(Action, "-s:") == NULL)
 		{
-			strcpy_s(arg,argv[i]);
-
-			if (LoopStringUpper(arg,"-r") != 0)
+			if ((argv[i + 1]) == NULL)
 			{
-				Cache.m_b_Remove = 1;
-				if (LoopStringUpper(arg,":StructSize"))
-				{
-					Cache.m_bDisp_dwStructSize		= 0;
-				}
-				else if (LoopStringUpper(arg,":SourceUrlName"))	
-				{
-					Cache.m_bDisp_lpszSourceUrlName	= 0;
-				}
-				else if (LoopStringUpper(arg,":LocalFileName"))	
-				{
-					Cache.m_bDisp_lpszLocalFileName	= 0;
-				}
-				else if (LoopStringUpper(arg,":CacheEntryType"))	
-				{
-					Cache.m_bDisp_CacheEntryType		= 0;
-				}
-				else if (LoopStringUpper(arg,":UseCount"))		
-				{
-					Cache.m_bDisp_dwUseCount			= 0;
-				}
-				else if (LoopStringUpper(arg,":HitRate"))		
-				{
-					Cache.m_bDisp_dwHitRate			= 0;
-				}
-				else if (LoopStringUpper(arg,":SizeLow"))		
-				{
-					Cache.m_bDisp_dwSizeLow			= 0;
-				}
-				else if (LoopStringUpper(arg,":SizeHigh"))		
-				{
-					Cache.m_bDisp_dwSizeHigh			= 0;
-				}
-				else if (LoopStringUpper(arg,":LastModifiedTime"))
-				{
-					Cache.m_bDisp_LastModifiedTime	= 0;
-				}
-				else if (LoopStringUpper(arg,":ExpireTime"))		
-				{
-					Cache.m_bDisp_ExpireTime			= 0;
-				}
-				else if (LoopStringUpper(arg,":LastAccessTime"))	
-				{
-					Cache.m_bDisp_LastAccessTime		= 0;	 
-				}
-				else if (LoopStringUpper(arg,":LastSyncTime"))	
-				{
-					Cache.m_bDisp_LastSyncTime		= 0;
-				}
-				//HeaderInfoSize needs to be before HeaderInfo because of the API we are using 
-				else if (LoopStringUpper(arg, ":HeaderInfoSize"))
-				{
-					Cache.m_bDisp_dwHeaderInfoSize = 0;
-				}
-				else if (LoopStringUpper(arg,":HeaderInfo"))		
-				{
-					Cache.m_bDisp_lpHeaderInfo		= 0;
-				}
-				else if (LoopStringUpper(arg,":FileExtension"))	
-				{
-					Cache.m_bDisp_lpszFileExtension	= 0;
-				}
-				else if (LoopStringUpper(arg, ":Expiration"))
-				{
-					Cache.m_bDisp_Expiration = 0;
-				}
-				else if (LoopStringUpper(arg,":a"))	
-				{
-					//Cache.m_bDisp_lpszSourceUrlName = 0;
-					Cache.m_bDisp_dwStructSize		= 0;
-					Cache.m_bDisp_lpszFileExtension	= 0;
-					Cache.m_bDisp_lpszLocalFileName	= 0;
-					Cache.m_bDisp_CacheEntryType	= 0;
-					Cache.m_bDisp_dwUseCount		= 0;
-					Cache.m_bDisp_dwHitRate			= 0;
-					Cache.m_bDisp_dwSizeLow			= 0;
-					Cache.m_bDisp_dwSizeHigh		= 0;
-					Cache.m_bDisp_LastModifiedTime	= 0;
-					Cache.m_bDisp_ExpireTime		= 0;
-					Cache.m_bDisp_LastAccessTime	= 0;	 
-					Cache.m_bDisp_LastSyncTime		= 0;
-					Cache.m_bDisp_lpHeaderInfo		= 0;
-					Cache.m_bDisp_dwHeaderInfoSize	= 0;
-					Cache.m_bDisp_lpszFileExtension	= 0;
-					Cache.m_bDisp_Expiration		= 0;
-
-				}
-				else
-				{
-					printf("\nSyntax error please read help using -h \n\n");
-					exit(0);
-				}
-			}		
+				printf("Search parameter not found\r\n");
+				printf("\nSyntax error please read help using -h \n\n");
+				return nRetCode;
+			}
+			if (!_strcmpi(argv[i+1],"SourceUrlName"))	
+			{
+				Cache.m_bSearch_lpszSourceUrlName	= 1;
+			}
+			else if (!_strcmpi(argv[i+1],"LocalFileName"))
+			{
+				Cache.m_bSearch_lpszLocalFileName	= 1;
+			}
+			else if (!_strcmpi(argv[i+1],"HeaderInfo"))
+			{
+				Cache.m_bSearch_lpHeaderInfo	= 1;
+			}
+			else if (!_strcmpi(argv[i+1], "ExpireTime"))
+			{
+				Cache.m_bSearch_ExpireTime = 1;
+			}			
+			else
+			{
+				printf("\nNo criteria given for search: searching Source URL Name\n\n");
+				Cache.m_bSearch_lpszSourceUrlName = 1;
+				printf("Searching for entries where %s contains : %s\r\n", "Source URL Name", argv[i + 1]);
+				//FALSE as last  parameter means search only, no delete
+				if (strcmp(Parameter, "h") == 0) Cache.Search(HISTORY_CACHE_PREFIX, argv[i + 1], FALSE);
+				else if (strcmp(Parameter, "c") == 0) Cache.Search(COOKIE_CACHE_PREFIX, argv[i + 1], FALSE);
+				else if (strcmp(Parameter, "t") == 0) Cache.Search(TEMPORARY_CACHE_PREFIX, argv[i + 1], FALSE);
+				else if (strcmp(Parameter, "a") == 0) Cache.SearchAll(argv[i + 1], FALSE);
+				else                                   Cache.Search(CachePrefix, argv[i + 1], FALSE);
+				exit(0L);
+			}
+			printf("Searching for entries where %s contains : %s\r\n",argv[i+1], argv[i+2]);
+			//FALSE as last  parameter means search only, no delete
+			if      (strcmp(Parameter, "h") == 0) Cache.Search(HISTORY_CACHE_PREFIX,argv[i+2],FALSE);
+			else if (strcmp(Parameter, "c") == 0) Cache.Search(COOKIE_CACHE_PREFIX,argv[i+2],FALSE);
+			else if (strcmp(Parameter, "t") == 0) Cache.Search(TEMPORARY_CACHE_PREFIX,argv[i+2],FALSE);
+			else if (strcmp(Parameter, "a") == 0) Cache.SearchAll(argv[i+2],FALSE);
+			else                                   Cache.Search(CachePrefix, argv[i + 2], FALSE);
+			exit(0L);
 		}
 
-
-		for (i=1;i<argc;i++)
+		//Delete
+		if (strcmp(Action, "-d:") == NULL)
 		{
-			strcpy_s(arg,argv[i]);
-			//_strupr_s(arg);
-			char *Parameter = strstr(arg, ":");
-			
-			//Help
-			if ((!strcmp(arg, "-h")) || (!strcmp(arg, "-?")) || (!Parameter))
+			if (!_strcmpi(argv[i+1],"SourceUrlName"))	
 			{
-				DisplayHelp();
-				exit(0L);
+				Cache.m_bSearch_lpszSourceUrlName	= 1;
 			}
-			Parameter++;
-			char CachePrefix[256] = "";
-			lstrcpyn(CachePrefix, Parameter, 250);
-			lstrcat(CachePrefix, ":");
-			char Action[5]="";
-			lstrcpyn(Action, arg,sizeof(Action));
-			Action[3] = '\0';
-
-			//List
-			if (strcmp(Action,"-l:") == NULL) 
+			else if (!_strcmpi(argv[i+1],"LocalFileName"))
 			{
-				if (argc >= i+2) 
-				{
-					printf("Too many parameters. Paramater not used with -l parameter\r\n");
-				 	printf("\nPlease read help using -h \n\n");
-					exit(0L);
-				}				
-				if      (strcmp(Parameter,"h") == 0)  Cache.Display(HISTORY_CACHE_PREFIX);
-				else if (strcmp(Parameter, "c") == 0) Cache.Display(COOKIE_CACHE_PREFIX);
-				else if (strcmp(Parameter, "t") == 0) Cache.Display(TEMPORARY_CACHE_PREFIX);
-				else if (strcmp(Parameter, "a") == 0) Cache.DisplayAll();
-				else Cache.Display(CachePrefix);
-				exit(0L);				
+				Cache.m_bSearch_lpszLocalFileName	= 1;
 			}
-
-			//Search
-			if (strcmp(Action, "-s:") == NULL)
+			else if (!_strcmpi(argv[i+1],"HeaderInfo"))
 			{
-				//-s requires a source URL name
-				/*if (argc != i+2) 
-				{
-					printf("Source URL name not found\r\n");
-				 	printf("\nSyntax error please read help using -h \n\n");
-					return nRetCode;
-				}*/
-				if ((argv[i + 1]) == NULL)
-				{
-					printf("Search parameter not found\r\n");
-					printf("\nSyntax error please read help using -h \n\n");
-					return nRetCode;
-				}
-				if (!_strcmpi(argv[i+1],"SourceUrlName"))	
-				{
-					Cache.m_bSearch_lpszSourceUrlName	= 1;
-				}
-				else if (!_strcmpi(argv[i+1],"LocalFileName"))
-				{
-					Cache.m_bSearch_lpszLocalFileName	= 1;
-				}
-				else if (!_strcmpi(argv[i+1],"HeaderInfo"))
-				{
-					Cache.m_bSearch_lpHeaderInfo	= 1;
-				}
-				else if (!_strcmpi(argv[i+1], "ExpireTime"))
-				{
-					Cache.m_bSearch_ExpireTime = 1;
-				}			
-				else
-				{
-					printf("\nSyntax error using -s option.please read help using -h \n\n");
-					exit(-1L);
-				}
-				printf("Searching for entries where %s contains : %s\r\n",argv[i+1], argv[i+2]);
-				//FALSE as last  parameter means search only, no delete
-				if      (strcmp(Parameter, "h") == 0) Cache.Search(HISTORY_CACHE_PREFIX,argv[i+2],FALSE);
-				else if (strcmp(Parameter, "c") == 0) Cache.Search(COOKIE_CACHE_PREFIX,argv[i+2],FALSE);
-				else if (strcmp(Parameter, "t") == 0) Cache.Search(TEMPORARY_CACHE_PREFIX,argv[i+2],FALSE);
-				else if (strcmp(Parameter, "a") == 0) Cache.SearchAll(argv[i+2],FALSE);
-				else                                   Cache.Search(CachePrefix, argv[i + 2], FALSE);
-				exit(0L);
+				Cache.m_bSearch_lpHeaderInfo	= 1;
 			}
-
-			//Delete
-			if (strcmp(Action, "-d:") == NULL)
+			else if (!_strcmpi(argv[i + 1], "ExpireTime"))
 			{
-				if ((argv[i + 1]) == NULL)
-				{
-					printf("Search parameter not found\r\n");
-					printf("\nSyntax error please read help using -h \n\n");
-					return nRetCode;
-				}
-				if (!_strcmpi(argv[i+1],"SourceUrlName"))	
-				{
-					Cache.m_bSearch_lpszSourceUrlName	= 1;
-				}
-				else if (!_strcmpi(argv[i+1],"LocalFileName"))
-				{
-					Cache.m_bSearch_lpszLocalFileName	= 1;
-				}
-				else if (!_strcmpi(argv[i+1],"HeaderInfo"))
-				{
-					Cache.m_bSearch_lpHeaderInfo	= 1;
-				}
-				else if (!_strcmpi(argv[i + 1], "ExpireTime"))
-				{
-					Cache.m_bSearch_ExpireTime = 1;
-				}
-				else
-				{
-					printf("\nSyntax error using -s option.please read help using -h \n\n");
-					exit(-1L);
-				}
-				printf("Deleting entries where %s contains : %s\r\n",argv[i+1], argv[i+2]);
-				//FALSE as last  parameter means search only, no delete
-				if      (strcmp(Parameter, "h") == 0) Cache.Search(HISTORY_CACHE_PREFIX, argv[i + 2], TRUE);
-				else if (strcmp(Parameter, "c") == 0) Cache.Search(COOKIE_CACHE_PREFIX, argv[i + 2], TRUE);
-				else if (strcmp(Parameter, "t") == 0) Cache.Search(TEMPORARY_CACHE_PREFIX, argv[i + 2], TRUE);
-				else if (strcmp(Parameter, "a") == 0) Cache.SearchAll(argv[i + 2], TRUE);
-				else                                   Cache.Search(CachePrefix, argv[i + 2], TRUE);
+				Cache.m_bSearch_ExpireTime = 1;
+			}
+			else
+			{
+				printf("\nNo criteria given for delete: seaching Source URL Name\n\n");
+				Cache.m_bSearch_lpszSourceUrlName = 1;
+				printf("Deleting entries where Source URL Name contains : %s\r\n",  argv[i + 1]);
+				if (strcmp(Parameter, "h") == 0) Cache.Search(HISTORY_CACHE_PREFIX, argv[i + 1], TRUE);
+				else if (strcmp(Parameter, "c") == 0) Cache.Search(COOKIE_CACHE_PREFIX, argv[i + 1], TRUE);
+				else if (strcmp(Parameter, "t") == 0) Cache.Search(TEMPORARY_CACHE_PREFIX, argv[i + 1], TRUE);
+				else if (strcmp(Parameter, "a") == 0) Cache.SearchAll(argv[i + 1], TRUE);
+				else                                   Cache.Search(CachePrefix, argv[i + 1], TRUE);
 				exit(0);
 			}
+			printf("Deleting entries where %s contains : %s\r\n",argv[i+1], argv[i+2]);
+			//FALSE as last  parameter means search only, no delete
+			if      (strcmp(Parameter, "h") == 0) Cache.Search(HISTORY_CACHE_PREFIX, argv[i + 2], TRUE);
+			else if (strcmp(Parameter, "c") == 0) Cache.Search(COOKIE_CACHE_PREFIX, argv[i + 2], TRUE);
+			else if (strcmp(Parameter, "t") == 0) Cache.Search(TEMPORARY_CACHE_PREFIX, argv[i + 2], TRUE);
+			else if (strcmp(Parameter, "a") == 0) Cache.SearchAll(argv[i + 2], TRUE);
+			else                                   Cache.Search(CachePrefix, argv[i + 2], TRUE);
+			exit(0);
+		}
 
-			//Clear
-			if (LoopStringUpper(arg,"-c") != 0)
+		//Clear
+		if (LoopStringUpper(arg,"-c") != 0)
+		{
+			if (argc >= i + 2)
 			{
-				if (argc >= i + 2)
-				{
-					printf("Too many parameters. Paramater not needed with -c parameter\r\n");
-					printf("\nPlease read help using -h\r\n");
-					exit(0L);
-				}
+				printf("Too many parameters. Paramater not needed with -c parameter\r\n");
+				printf("\nPlease read help using -h\r\n");
+				exit(0L);
+			}
 				
-				if (LoopStringUpper(arg,":h") != 0)      ClearCache.Clear(HISTORY_CACHE_PREFIX);
-				else if (LoopStringUpper(arg,"c") != 0) ClearCache.Clear(COOKIE_CACHE_PREFIX);
-				else if (LoopStringUpper(arg,"t") != 0) ClearCache.Clear(TEMPORARY_CACHE_PREFIX);
-				else if (LoopStringUpper(arg,"a") != 0) ClearCache.ClearAll();
-				else                                     ClearCache.Clear(CachePrefix);
+			if (LoopStringUpper(arg,":h") != 0)      ClearCache.Clear(HISTORY_CACHE_PREFIX);
+			else if (LoopStringUpper(arg,"c") != 0) ClearCache.Clear(COOKIE_CACHE_PREFIX);
+			else if (LoopStringUpper(arg,"t") != 0) ClearCache.Clear(TEMPORARY_CACHE_PREFIX);
+			else if (LoopStringUpper(arg,"a") != 0) ClearCache.ClearAll();
+			else                                     ClearCache.Clear(CachePrefix);
 
-				printf("Number of entries found: %d. Number of entries deleted: %d\r\n", ClearCache.nEntries, ClearCache.nEntriesDeleted);
-				exit(0);
-			}
+			printf("Number of entries found: %d. Number of entries deleted: %d\r\n", ClearCache.nEntries, ClearCache.nEntriesDeleted);
+			exit(0);
 		}
 	}
+
 	return nRetCode;
 }
 
@@ -458,6 +472,10 @@ void CreateLowProcess()
 						printf("CreateProcessAsUserW failed\r\n");
 						ErrorPrint();
 					}
+					else
+					{
+						printf("CreateProcessAsUser %ws with Low Integrity. Command line: %ws\r\n", wszProcessName, lpwszCommandLine);
+					}
 				}
 				else
 				{
@@ -485,4 +503,73 @@ void CreateLowProcess()
 		printf("OpenProcessToken failed\r\n");
 		ErrorPrint();
 	}
+}
+
+DWORD GetProcessIntegrityLevel()
+{
+	HANDLE hToken;
+	HANDLE hProcess;
+
+	DWORD dwLengthNeeded;
+	DWORD dwError = ERROR_SUCCESS;
+
+	PTOKEN_MANDATORY_LABEL pTIL = NULL;
+	DWORD dwIntegrityLevel;
+
+	hProcess = GetCurrentProcess();
+	if (OpenProcessToken(hProcess, TOKEN_QUERY |
+		TOKEN_QUERY_SOURCE, &hToken))
+	{
+		// Get the Integrity level.
+		if (!GetTokenInformation(hToken, TokenIntegrityLevel,
+			NULL, 0, &dwLengthNeeded))
+		{
+			dwError = GetLastError();
+			if (dwError == ERROR_INSUFFICIENT_BUFFER)
+			{
+				pTIL = (PTOKEN_MANDATORY_LABEL)LocalAlloc(0,
+					dwLengthNeeded);
+				if (pTIL != NULL)
+				{
+					if (GetTokenInformation(hToken, TokenIntegrityLevel,
+						pTIL, dwLengthNeeded, &dwLengthNeeded))
+					{
+						dwIntegrityLevel = *GetSidSubAuthority(pTIL->Label.Sid,
+							(DWORD)(UCHAR)(*GetSidSubAuthorityCount(pTIL->Label.Sid) - 1));
+
+						if (dwIntegrityLevel < SECURITY_MANDATORY_MEDIUM_RID)
+						{
+							// Low Integrity
+							wprintf(L"Running as Low Integrity Process\r\n");
+						}
+						else if (dwIntegrityLevel >= SECURITY_MANDATORY_MEDIUM_RID &&
+							dwIntegrityLevel < SECURITY_MANDATORY_HIGH_RID)
+						{
+							// Medium Integrity
+							wprintf(L"Running as Medium Integrity Process\r\n");
+						}
+						else if (dwIntegrityLevel >= SECURITY_MANDATORY_HIGH_RID)
+						{
+							// High Integrity
+							wprintf(L"Running as High Integrity Process\r\n");
+						}
+						return dwIntegrityLevel;
+					}
+					else
+					{
+						printf("GetProcessIntegrityLevel: GetTokenInformation failed\r\n");
+						ErrorPrint();
+					}
+					LocalFree(pTIL);
+				}
+			}
+		}
+		CloseHandle(hToken);
+	}
+	else
+	{
+		printf("GetProcessIntegrityLevel: OpenProcessToken failed\r\n");
+		ErrorPrint();
+	}
+	return -1;
 }
