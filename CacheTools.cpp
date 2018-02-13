@@ -167,8 +167,27 @@ int main(int argc, char* argv[])
 				printf("-low option cannot be run from an administrative command prompt (High Integrity Level)\r\n");
 				exit(-1L);
 			}
-			CreateLowProcess();
-			exit(0L);
+			else if (dwProcessIntegrityLevel == SECURITY_MANDATORY_LOW_RID)
+			{
+				//¨process already Low -> shift arguments
+				
+				for (;i < argc; i++)
+				{
+					printf("i: %d argv[i]: %s\r\n", i, argv[i]);
+					argv[i]= argv[i + 1];
+					printf("i: %d argv[i]: %s\r\n", i, argv[i]);
+				}
+				argc--;
+			}
+			else if (dwProcessIntegrityLevel == SECURITY_MANDATORY_MEDIUM_RID)
+			{
+				CreateLowProcess();
+				exit(0L);
+			}
+			else
+			{
+				printf("Unexpected integity level for -low option\r\n");
+			}
 		}
 	}
 
@@ -437,7 +456,7 @@ void CreateLowProcess()
 	GetModuleFileNameW(NULL, wszProcessName,MAX_PATH-1);
 	WCHAR *lpwszCommandLine = GetCommandLineW();
 	//remove -low from command line
-	lpwszCommandLine += 8+wcslen(wszProcessName);
+	//lpwszCommandLine += 8+wcslen(wszProcessName);
 
 	// Low integrity SID
 	WCHAR wszIntegritySid[20] = L"S-1-16-4096";
