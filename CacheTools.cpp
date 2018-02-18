@@ -173,9 +173,7 @@ int main(int argc, char* argv[])
 				
 				for (;i < argc; i++)
 				{
-					printf("i: %d argv[i]: %s\r\n", i, argv[i]);
 					argv[i]= argv[i + 1];
-					printf("i: %d argv[i]: %s\r\n", i, argv[i]);
 				}
 				argc--;
 			}
