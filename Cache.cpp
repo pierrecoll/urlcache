@@ -270,19 +270,19 @@ void CCache::DisplayCacheEntry(INTERNET_CACHE_ENTRY_INFO* pInfo)
 	}
 	if (m_bDisp_dwUseCount)
 	{
-		printf(" Use Count          : %d \n", pInfo->dwUseCount);
+		printf(" Use Count          : %u \n", pInfo->dwUseCount);
 	}
 	if (m_bDisp_dwHitRate)
 	{
-		printf(" Hit Rate           : %d \n", pInfo->dwHitRate);
+		printf(" Hit Rate           : %u \n", pInfo->dwHitRate);
 	}
 	if (m_bDisp_dwSizeLow)
 	{
-		printf(" Size Low           : %d \n", pInfo->dwSizeLow);
+		printf(" Size Low           : %u \n", pInfo->dwSizeLow);
 	}
 	if (m_bDisp_dwSizeHigh)
 	{
-		printf(" Size High          : %d \n", pInfo->dwSizeHigh);
+		printf(" Size High          : %u \n", pInfo->dwSizeHigh);
 	}
 	if (m_bDisp_LastModifiedTime)
 	{
@@ -302,7 +302,7 @@ void CCache::DisplayCacheEntry(INTERNET_CACHE_ENTRY_INFO* pInfo)
 	}
 	if (m_bDisp_dwHeaderInfoSize)
 	{
-		printf(" Header Info Size   : %d \n", pInfo->dwHeaderInfoSize);
+		printf(" Header Info Size   : %u \n", pInfo->dwHeaderInfoSize);
 	}
 	if (m_bDisp_lpHeaderInfo)
 	{
@@ -438,7 +438,7 @@ CString GetCacheType(DWORD dwType)
 		strTemp += "URLHISTORY_CACHE_ENTRY";
 	}
 
-	str.Format("(0x%08x) => %s", dwType, strTemp);
+	str.Format((LPCSTR)"(0x%08x) => %s", dwType, strTemp);
 
 	return str;
 }
@@ -462,10 +462,10 @@ CString DWORD2String(DWORD dw)
 //////////////////////////////////////////////////////////////////////
 CString GetTime(FILETIME ft)
 {
-	SYSTEMTIME st;
+	SYSTEMTIME st = {};
 
-	char szLocalDate[255];
-	char szLocalTime[255];   
+	char szLocalDate[255]="";
+	char szLocalTime[255]="";   
 
 	CString strtemp;
 //1.23 
@@ -494,7 +494,7 @@ CString GetTime(FILETIME ft)
 					DATE_SHORTDATE, 
 					&st, 
 					NULL,   
-					szLocalDate, 
+					(LPSTR)szLocalDate, 
 					255 );
 
 	GetTimeFormat(	LOCALE_USER_DEFAULT, 
