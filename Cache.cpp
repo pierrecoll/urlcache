@@ -153,13 +153,13 @@ BOOL  CCache::SearchCache(INTERNET_CACHE_ENTRY_INFO* pInfo, LPSTR lpszSearch,BOO
 	{		
 		//160614  handling * separator
 		char SearchCopy[L_MAX_URL_LENGTH+1];
-		lstrcpyn(SearchCopy, lpszSearch, L_MAX_URL_LENGTH);
-		char seps[] = "*";
+		lstrcpyn((LPSTR)SearchCopy, lpszSearch, L_MAX_URL_LENGTH);
+		const char seps[] = "*";
 		char *token = NULL;
 		char *next_token;
 		//Returns a pointer to the next token found in strToken. They return NULL when no more tokens are found. 
 		//Each call modifies strToken by substituting a NULL character for the first delimiter that occurs after the returned token.
-		token= strtok_s(SearchCopy, seps, &next_token);
+		token= strtok_s((LPSTR)SearchCopy, seps, &next_token);
 
 		while (token != NULL)
 		{
@@ -173,20 +173,20 @@ BOOL  CCache::SearchCache(INTERNET_CACHE_ENTRY_INFO* pInfo, LPSTR lpszSearch,BOO
 				}	
 				return bFound;
 			}
-			token = strtok_s(NULL, seps, &next_token);
+			token = strtok_s((LPSTR)NULL, seps, &next_token);
 		}
 	}
 	if (m_bSearch_lpszLocalFileName == 1)
 	{		
 		//160614  handling * separator 
 		char SearchCopy[L_MAX_URL_LENGTH + 1];
-		lstrcpyn(SearchCopy, lpszSearch, L_MAX_URL_LENGTH);
-		char seps[] = "*";
+		lstrcpyn((LPSTR)SearchCopy, lpszSearch, L_MAX_URL_LENGTH);
+		const char seps[] = "*";
 		char *token = NULL;
 		char *next_token;
 		//Returns a pointer to the next token found in strToken. They return NULL when no more tokens are found. 
 		//Each call modifies strToken by substituting a NULL character for the first delimiter that occurs after the returned token.
-		token = strtok_s(SearchCopy, seps, &next_token);
+		token = strtok_s((LPSTR)SearchCopy, seps, &next_token);
 
 		while (token != NULL)
 		{
@@ -200,7 +200,7 @@ BOOL  CCache::SearchCache(INTERNET_CACHE_ENTRY_INFO* pInfo, LPSTR lpszSearch,BOO
 				}
 				return bFound;
 			}
-			token = strtok_s(NULL, seps, &next_token);
+			token = strtok_s((LPSTR)NULL, seps, &next_token);
 		}
 	}
 
@@ -252,7 +252,7 @@ void CCache::DisplayCacheEntry(INTERNET_CACHE_ENTRY_INFO* pInfo)
 
 	if (m_bDisp_dwStructSize)
 	{
-			printf(" Structure Size     : %s \n", DWORD2String(pInfo->dwStructSize));
+			printf(" Structure Size     : %u \n", pInfo->dwStructSize);
 	}
 	if (m_bDisp_lpszSourceUrlName)
 	{
