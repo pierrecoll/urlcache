@@ -152,15 +152,16 @@ BOOL  CCache::SearchCache(INTERNET_CACHE_ENTRY_INFO* pInfo, LPSTR lpszSearch,BOO
 	if (m_bSearch_lpszSourceUrlName == 1)
 	{		
 		//160614  handling * separator
-		char SearchCopy[L_MAX_URL_LENGTH+1];
-		lstrcpyn((LPSTR)SearchCopy, lpszSearch, L_MAX_URL_LENGTH);
+		char SearchCopy[L_MAX_URL_LENGTH+1]="";
+		lstrcpynA((LPSTR)SearchCopy, lpszSearch, L_MAX_URL_LENGTH);
 		const char seps[] = "*";
 		char *token = NULL;
 		char *next_token;
 		//Returns a pointer to the next token found in strToken. They return NULL when no more tokens are found. 
 		//Each call modifies strToken by substituting a NULL character for the first delimiter that occurs after the returned token.
+		//returns SearchCopy if no delimiter is present!
 		token= strtok_s((LPSTR)SearchCopy, seps, &next_token);
-
+		
 		while (token != NULL)
 		{
 			if ((token) && (strstr(pInfo->lpszSourceUrlName, token)))
