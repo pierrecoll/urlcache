@@ -61,6 +61,7 @@ class CCache
 
 
 		BOOL  SearchCache(INTERNET_CACHE_ENTRY_INFO* pInfo, LPSTR lpszSearch, BOOL bDelete);
+		BOOL  SearchCacheByItem(LPSTR StringToSearch, INTERNET_CACHE_ENTRY_INFO* pInfo, LPSTR lpszSearch, BOOL bDelete);
 		void Search(LPSTR lpszContainer, LPSTR lpszSourceUrlName, BOOL bDelete);
 		void SearchAll			(LPSTR lpszSourceUrlName, BOOL bDelete);
 		void DisplayCacheEntry(INTERNET_CACHE_ENTRY_INFO*);

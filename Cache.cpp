@@ -150,117 +150,16 @@ BOOL  CCache::SearchCache(INTERNET_CACHE_ENTRY_INFO* pInfo, LPSTR lpszSearch,BOO
 {
 	BOOL bFound = FALSE;
 	if (m_bSearch_lpszSourceUrlName == 1)
-	{		
+	{
 		//160614  handling * separator
-		//200113  handling + separator
+		//210113  handling + separator
 
-		char SearchCopy[MAX_PATH+1]="";
-		lstrcpynA(SearchCopy, lpszSearch, MAX_PATH);		
-		char* seps = new char[2];
-		if (strrchr(SearchCopy,'*'))
-		{
-			seps[0] = '*';
-			seps[1] = '\0';
-			char* token = NULL;
-			char* next_token;
-			//Returns a pointer to the next token found in strToken. They return NULL when no more tokens are found. 
-			//Each call modifies strToken by substituting a NULL character for the first delimiter that occurs after the returned token.
-			//returns SearchCopy when no delimiter is present!
-			token = strtok_s(SearchCopy, seps, &next_token);
+		return (SearchCacheByItem(pInfo->lpszSourceUrlName, pInfo, lpszSearch, bDelete));
 
-			while (token != NULL)
-			{
-				if ((token) && (strstr(pInfo->lpszSourceUrlName, token)))
-				{
-					bFound = TRUE;
-					DisplayCacheEntry(pInfo);
-					if (bDelete)
-					{
-						DelCacheEntry(pInfo);
-					}
-					return bFound;
-				}
-				token = strtok_s((LPSTR)NULL, seps, &next_token);
-			}
-		}
-		else if (strrchr(SearchCopy, '+'))
-		{
-			seps[0] = '+';
-			seps[1] = '\0';
-			char* token = NULL;
-			char* next_token;
-			//Returns a pointer to the next token found in strToken. They return NULL when no more tokens are found. 
-			//Each call modifies strToken by substituting a NULL character for the first delimiter that occurs after the returned token.
-			//returns SearchCopy when no delimiter is present!
-			token = strtok_s(SearchCopy, seps, &next_token);
-			bFound = FALSE;
-			while (token != NULL)
-			{
-				if ((token) && (strstr(pInfo->lpszSourceUrlName, token)))
-				{
-					bFound = TRUE;
-				}
-				else
-				{
-					bFound = FALSE;
-					return FALSE;
-				}
-				token = strtok_s((LPSTR)NULL, seps, &next_token);
-			}
-			if (bFound == TRUE)
-			{
-				DisplayCacheEntry(pInfo);
-				if (bDelete)
-				{
-					DelCacheEntry(pInfo);
-				}
-				return bFound;
-			}
-		}
-		else  //no separator
-		{
-			if (strstr(pInfo->lpszSourceUrlName, SearchCopy))
-			{
-				bFound = TRUE;
-				DisplayCacheEntry(pInfo);
-				if (bDelete)
-				{
-					DelCacheEntry(pInfo);
-				}
-				return bFound;
-			}
-			else
-			{
-				return FALSE;
-			}
-		}
 	}
 	if (m_bSearch_lpszLocalFileName == 1)
 	{		
-		//160614  handling * separator 
-		char SearchCopy[MAX_PATH + 1];
-		lstrcpyn((LPSTR)SearchCopy, lpszSearch, MAX_PATH);
-		const char seps[] = "*";
-		char *token = NULL;
-		char *next_token;
-		//Returns a pointer to the next token found in strToken. They return NULL when no more tokens are found. 
-		//Each call modifies strToken by substituting a NULL character for the first delimiter that occurs after the returned token.
-		token = strtok_s((LPSTR)SearchCopy, seps, &next_token);
-
-		while (token != NULL)
-		{
-			if ((token) && (strstr(pInfo->lpszLocalFileName, token)))
-			{
-				bFound = TRUE;
-				DisplayCacheEntry(pInfo);
-				if (bDelete)
-				{
-					DelCacheEntry(pInfo);
-				}
-				return bFound;
-			}
-			token = strtok_s((LPSTR)NULL, seps, &next_token);
-		}
+		return (SearchCacheByItem(pInfo->lpszLocalFileName, pInfo, lpszSearch, bDelete));
 	}
 
 	if (m_bSearch_lpHeaderInfo == 1)
@@ -290,6 +189,102 @@ BOOL  CCache::SearchCache(INTERNET_CACHE_ENTRY_INFO* pInfo, LPSTR lpszSearch,BOO
 				DelCacheEntry(pInfo);
 			}
 			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+//////////////////////////////////////////////////////////////////////
+// Methode : CCache
+// Resume : Search cache entry work function
+// In : INTERNET_CACHE_ENTRY_INFO
+// Out : None
+//////////////////////////////////////////////////////////////////////
+BOOL  CCache::SearchCacheByItem(LPSTR StringToSearch, INTERNET_CACHE_ENTRY_INFO* pInfo, LPSTR lpszSearch, BOOL bDelete)
+{
+	BOOL bFound = FALSE;
+
+	//160614  handling * separator
+	//210113  handling + separator
+
+	char SearchCopy[MAX_PATH + 1] = "";
+	lstrcpynA(SearchCopy, lpszSearch, MAX_PATH);
+	char* seps = new char[2];
+	if (strrchr(SearchCopy, '*'))
+	{
+		seps[0] = '*';
+		seps[1] = '\0';
+		char* token = NULL;
+		char* next_token;
+		//Returns a pointer to the next token found in strToken. They return NULL when no more tokens are found. 
+		//Each call modifies strToken by substituting a NULL character for the first delimiter that occurs after the returned token.
+		//returns SearchCopy when no delimiter is present!
+		token = strtok_s(SearchCopy, seps, &next_token);
+
+		while (token != NULL)
+		{
+			if ((token) && (strstr(StringToSearch, token)))
+			{
+				bFound = TRUE;
+				DisplayCacheEntry(pInfo);
+				if (bDelete)
+				{
+					DelCacheEntry(pInfo);
+				}
+				return bFound;
+			}
+			token = strtok_s((LPSTR)NULL, seps, &next_token);
+		}
+	}
+	else if (strrchr(SearchCopy, '+'))
+	{
+		seps[0] = '+';
+		seps[1] = '\0';
+		char* token = NULL;
+		char* next_token;
+		//Returns a pointer to the next token found in strToken. They return NULL when no more tokens are found. 
+		//Each call modifies strToken by substituting a NULL character for the first delimiter that occurs after the returned token.
+		//returns SearchCopy when no delimiter is present!
+		token = strtok_s(SearchCopy, seps, &next_token);
+		bFound = FALSE;
+		while (token != NULL)
+		{
+			if ((token) && (strstr(StringToSearch, token)))
+			{
+				bFound = TRUE;
+			}
+			else
+			{
+				bFound = FALSE;
+				return FALSE;
+			}
+			token = strtok_s((LPSTR)NULL, seps, &next_token);
+		}
+		if (bFound == TRUE)
+		{
+			DisplayCacheEntry(pInfo);
+			if (bDelete)
+			{
+				DelCacheEntry(pInfo);
+			}
+			return bFound;
+		}
+	}
+	else  //no separator
+	{
+		if (strstr(StringToSearch, SearchCopy))
+		{
+			bFound = TRUE;
+			DisplayCacheEntry(pInfo);
+			if (bDelete)
+			{
+				DelCacheEntry(pInfo);
+			}
+			return bFound;
+		}
+		else
+		{
+			return FALSE;
 		}
 	}
 	return FALSE;
