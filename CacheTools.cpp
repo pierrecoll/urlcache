@@ -30,6 +30,7 @@
 //1.50 adding support for low integrity 
 //1.51 using source URL Name as default criteria for search
 //1.52 checking integrity level for -low option
+//1.53 200113 adding support for separator * in sourceurlname and localfilename
 
 DWORD ErrorPrint();
 DWORD GetProcessIntegrityLevel();
@@ -38,7 +39,7 @@ void DisplayHelp()
 {
 	printf("UrlCache : Tool to clear, display, search or delete Cookies, History , Temporary Internet or any other existing WinINet Url Cache Container entries\n\n");
 	printf("pierrelc@microsoft.com (Original idea Francois Bernis)\r\n");
-	printf("Version 1.52 February 2018\r\n");
+	printf("Version 1.53 January 2020\r\n");
 	printf("Uses WinINet Url cache APIs https://msdn.microsoft.com/en-us/library/windows/desktop/aa383928(v=vs.85).aspx \r\n");
 	
 	printf("Help : -h or -?\n\n");
