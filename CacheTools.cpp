@@ -31,6 +31,7 @@
 //1.51 using source URL Name as default criteria for search
 //1.52 checking integrity level for -low option
 //1.53 200113 adding support for separator * in sourceurlname and localfilename
+//1.54 210114 adding support for separator + in sourceurlname and localfilename
 
 DWORD ErrorPrint();
 DWORD GetProcessIntegrityLevel();
@@ -39,8 +40,10 @@ void DisplayHelp()
 {
 	printf("UrlCache : Tool to clear, display, search or delete Cookies, History , Temporary Internet or any other existing WinINet Url Cache Container entries\n\n");
 	printf("pierrelc@microsoft.com (Original idea Francois Bernis)\r\n");
-	printf("Version 1.53 January 2020\r\n");
+	printf("Version 1.54 January 2021\r\n");
 	printf("Uses WinINet Url cache APIs https://msdn.microsoft.com/en-us/library/windows/desktop/aa383928(v=vs.85).aspx \r\n");
+	printf("Starting with Windows10 version 1709 aka RS3, cookies are stored in a database:");
+	printf("you will have to use internetgetcookie.exe from https://aka.ms/browsertools to display cookie content");
 	
 	printf("Help : -h or -?\n\n");
 
@@ -66,15 +69,17 @@ void DisplayHelp()
 
 	printf("Search criteria:\n");
 	printf("\t[SourceUrlName | LocalFileName | HeaderInfo | ExpireTime] text\n");
-	printf("\tSourceUrlName and LocalFileName can mention different strings separated by *\n\n");
+	printf("\tSourceUrlName and LocalFileName can mention different strings separated by * or + meaning OR or AND\n\n");
 
 	printf("\tFor example, to search all entries in TIF containing wpad in the SourceUrlName field : \n");
 	printf("\t   urlcache  -s:t SourceUrlName wpad\n\n");
 	printf("\tTo search all entries in TIF containing autoconfig in the HeaderInfo field : \n");
 	printf("\t   urlcache  -s:t HeaderInfo application/x-ns-proxy-autoconfig\n\n");
-	printf("\tTo delete all entries in TIF containing wpad or pac in the SourceUrlName field : \n");
+	printf("\tTo delete all entries in TIF containing wpad OR pac in the SourceUrlName field : \n");
 	printf("\t   urlcache  -d:t SourceUrlName wpad*pac\n\n");
-	
+	printf("\tTo delete all entries in TIF containing wpad AND pac in the LocalFileName field : \n");
+	printf("\t   urlcache  -d:t LocalFileName wpad+pac\n\n");
+
 	printf("Warning: Search is case sensitive!\n\n");
 
 	printf("To prevent displaying one or more cache entries info use the switches below\n\n");
