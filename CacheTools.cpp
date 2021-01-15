@@ -42,8 +42,8 @@ void DisplayHelp()
 	printf("pierrelc@microsoft.com (Original idea Francois Bernis)\r\n");
 	printf("Version 1.54 January 2021\r\n");
 	printf("Uses WinINet Url cache APIs https://msdn.microsoft.com/en-us/library/windows/desktop/aa383928(v=vs.85).aspx \r\n");
-	printf("Starting with Windows10 version 1709 aka RS3, cookies are stored in a database:");
-	printf("you will have to use internetgetcookie.exe from https://aka.ms/browsertools to display cookie content");
+	printf("Starting with Windows10 version 1709 aka RS3, cookies are stored in a database:\r\n");
+	printf("you will have to use internetgetcookie.exe from https://aka.ms/browsertools to display cookie content\r\n");
 	
 	printf("Help : -h or -?\n\n");
 
